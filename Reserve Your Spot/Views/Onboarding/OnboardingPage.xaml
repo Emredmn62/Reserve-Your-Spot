@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Reserve_Your_Spot.ViewModels"
+             x:Class="Reserve_Your_Spot.Views.Onboarding.OnboardingPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <!-- Slides CarouselView -->
+        <CarouselView Grid.Row="0"
+                      x:Name="SlideCarousel"
+                      ItemsSource="{Binding Slides}"
+                      IndicatorView="SlideIndicator"
+                      CurrentItemChanged="OnSlideChanged"
+                      Loop="False">
+            <CarouselView.ItemTemplate>
+                <DataTemplate x:DataType="vm:OnboardingSlide">
+                    <Grid RowDefinitions="*,Auto" Padding="32,60,32,20">
+                        <VerticalStackLayout Grid.Row="0" VerticalOptions="Center" Spacing="24">
+                            <!-- Icon -->
+                            <Label Text="{Binding IconEmoji}"
+                                   FontSize="90"
+                                   HorizontalOptions="Center" />
+                            <!-- Gold accent line -->
+                            <BoxView Color="{StaticResource ColorGold}"
+                                     HeightRequest="3" WidthRequest="60"
+                                     CornerRadius="2"
+                                     HorizontalOptions="Center" />
+                            <!-- Title -->
+                            <Label Text="{Binding Title}"
+                                   FontSize="30" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorWhite}"
+                                   HorizontalTextAlignment="Center"
+                                   LineBreakMode="WordWrap" />
+                            <!-- Description -->
+                            <Label Text="{Binding Description}"
+                                   FontSize="16"
+                                   TextColor="{StaticResource ColorGrey}"
+                                   HorizontalTextAlignment="Center"
+                                   LineBreakMode="WordWrap" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+
+        <!-- Bottom controls -->
+        <VerticalStackLayout Grid.Row="1" Padding="32,0,32,48" Spacing="16">
+            <!-- Indicator dots -->
+            <IndicatorView x:Name="SlideIndicator"
+                           IndicatorColor="{StaticResource ColorGrey}"
+                           SelectedIndicatorColor="{StaticResource ColorGold}"
+                           IndicatorSize="10"
+                           HorizontalOptions="Center" />
+
+            <!-- Get Started button -->
+            <Button Text="Get Started"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12"
+                    HeightRequest="52"
+                    FontAttributes="Bold"
+                    FontSize="16"
+                    Command="{Binding NextCommand}" />
+
+            <!-- Sign In link -->
+            <Label HorizontalOptions="Center">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Already have an account? " TextColor="{StaticResource ColorGrey}" FontSize="14" />
+                        <Span Text="Sign In" TextColor="{StaticResource ColorGold}" FontSize="14" FontAttributes="Bold">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SkipCommand}" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

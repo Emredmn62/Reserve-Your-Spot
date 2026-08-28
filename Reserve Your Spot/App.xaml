@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:conv="clr-namespace:Reserve_Your_Spot.Converters"
+             x:Class="Reserve_Your_Spot.App">
+    <Application.Resources>
+        <ResourceDictionary>
+
+            <!-- ===== CONVERTERS ===== -->
+            <conv:InverseBoolConverter x:Key="InverseBool" />
+            <conv:BoolToEyeIconConverter x:Key="BoolToEyeIcon" />
+            <conv:PriceFormatter x:Key="PriceFmt" />
+            <conv:DateFormatter x:Key="DateFmt" />
+
+            <!-- ===== COLOURS ===== -->
+            <Color x:Key="ColorBlack">#0A0A0A</Color>
+            <Color x:Key="ColorSurface">#1E1E1E</Color>
+            <Color x:Key="ColorSurface2">#2A2A2A</Color>
+            <Color x:Key="ColorGold">#C9A84C</Color>
+            <Color x:Key="ColorWhite">#FFFFFF</Color>
+            <Color x:Key="ColorGrey">#888888</Color>
+            <Color x:Key="ColorGreyDark">#555555</Color>
+            <Color x:Key="ColorError">#FF4444</Color>
+            <Color x:Key="ColorSuccess">#44BB44</Color>
+            <Color x:Key="ColorTransparent">Transparent</Color>
+
+            <!-- ===== GLOBAL STYLES ===== -->
+
+            <!-- Label -->
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="FontFamily" Value="Default" />
+            </Style>
+
+            <!-- Button -->
+            <Style TargetType="Button">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorGold}" />
+                <Setter Property="TextColor" Value="{StaticResource ColorBlack}" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+            </Style>
+
+            <!-- Entry -->
+            <Style TargetType="Entry">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+                <Setter Property="TextColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="PlaceholderColor" Value="{StaticResource ColorGrey}" />
+                <Setter Property="HeightRequest" Value="52" />
+            </Style>
+
+            <!-- Editor -->
+            <Style TargetType="Editor">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+                <Setter Property="TextColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="PlaceholderColor" Value="{StaticResource ColorGrey}" />
+            </Style>
+
+            <!-- Page -->
+            <Style TargetType="Page" ApplyToDerivedTypes="True">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorBlack}" />
+            </Style>
+
+            <!-- Shell -->
+            <Style TargetType="Shell" ApplyToDerivedTypes="True">
+                <Setter Property="Shell.BackgroundColor" Value="{StaticResource ColorSurface}" />
+                <Setter Property="Shell.ForegroundColor" Value="{StaticResource ColorGold}" />
+                <Setter Property="Shell.TitleColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{StaticResource ColorSurface}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource ColorGold}" />
+                <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource ColorGold}" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="{StaticResource ColorGrey}" />
+            </Style>
+
+            <!-- Border -->
+            <Style TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+                <Setter Property="Stroke" Value="{StaticResource ColorSurface2}" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+            </Style>
+
+            <!-- Frame -->
+            <Style TargetType="Frame">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+                <Setter Property="BorderColor" Value="{StaticResource ColorSurface2}" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HasShadow" Value="True" />
+            </Style>
+
+            <!-- SearchBar -->
+            <Style TargetType="SearchBar">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+                <Setter Property="TextColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="PlaceholderColor" Value="{StaticResource ColorGrey}" />
+                <Setter Property="CancelButtonColor" Value="{StaticResource ColorGold}" />
+            </Style>
+
+            <!-- Switch -->
+            <Style TargetType="Switch">
+                <Setter Property="OnColor" Value="{StaticResource ColorGold}" />
+                <Setter Property="ThumbColor" Value="{StaticResource ColorWhite}" />
+            </Style>
+
+            <!-- Picker -->
+            <Style TargetType="Picker">
+                <Setter Property="TextColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="TitleColor" Value="{StaticResource ColorGrey}" />
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+            </Style>
+
+            <!-- DatePicker -->
+            <Style TargetType="DatePicker">
+                <Setter Property="TextColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+            </Style>
+
+            <!-- TimePicker -->
+            <Style TargetType="TimePicker">
+                <Setter Property="TextColor" Value="{StaticResource ColorWhite}" />
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorSurface}" />
+            </Style>
+
+            <!-- ActivityIndicator -->
+            <Style TargetType="ActivityIndicator">
+                <Setter Property="Color" Value="{StaticResource ColorGold}" />
+            </Style>
+
+            <!-- RefreshView -->
+            <Style TargetType="RefreshView">
+                <Setter Property="RefreshColor" Value="{StaticResource ColorGold}" />
+            </Style>
+
+            <!-- ScrollView -->
+            <Style TargetType="ScrollView">
+                <Setter Property="BackgroundColor" Value="{StaticResource ColorBlack}" />
+            </Style>
+
+            <!-- Slider -->
+            <Style TargetType="Slider">
+                <Setter Property="MinimumTrackColor" Value="{StaticResource ColorGold}" />
+                <Setter Property="MaximumTrackColor" Value="{StaticResource ColorSurface2}" />
+                <Setter Property="ThumbColor" Value="{StaticResource ColorGold}" />
+            </Style>
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

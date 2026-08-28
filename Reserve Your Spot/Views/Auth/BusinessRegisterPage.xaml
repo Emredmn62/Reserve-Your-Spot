@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             x:Class="Reserve_Your_Spot.Views.Auth.BusinessRegisterPage"
+             Title="Setup Your Business"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,16" Spacing="0">
+
+            <Label Text="Tell us about your business"
+                   FontSize="22" FontAttributes="Bold"
+                   TextColor="{StaticResource ColorWhite}"
+                   Margin="0,0,0,6" />
+            <Label Text="Customers will see this on your profile"
+                   FontSize="14" TextColor="{StaticResource ColorGrey}"
+                   Margin="0,0,0,28" />
+
+            <!-- Business Name -->
+            <Label Text="Business Name *" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
+                <Entry x:Name="BusinessNameEntry" Placeholder="e.g. Fade Masters Barbershop"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Description -->
+            <Label Text="Description" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="12" Margin="0,0,0,16">
+                <Editor x:Name="DescriptionEditor" Placeholder="What makes your business special?"
+                        HeightRequest="90"
+                        BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                        PlaceholderColor="{StaticResource ColorGrey}" />
+            </Border>
+
+            <!-- Category -->
+            <Label Text="Category *" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
+                <Picker x:Name="CategoryPicker"
+                        Title="Select a category"
+                        TextColor="{StaticResource ColorWhite}"
+                        BackgroundColor="Transparent"
+                        TitleColor="{StaticResource ColorGrey}"
+                        Margin="12,0" />
+            </Border>
+
+            <!-- Address -->
+            <Label Text="Address *" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
+                <Entry x:Name="AddressEntry" Placeholder="123 High Street, London"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Phone -->
+            <Label Text="Phone Number *" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,32">
+                <Entry x:Name="PhoneEntry" Placeholder="+44 7700 900000" Keyboard="Telephone"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Complete Setup button -->
+            <Button x:Name="CompleteBtn"
+                    Text="Complete Setup"
+                    Clicked="OnCompleteClicked"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12" HeightRequest="52"
+                    FontAttributes="Bold" FontSize="16" />
+
+            <ActivityIndicator x:Name="BusyIndicator"
+                               IsRunning="False" IsVisible="False"
+                               Color="{StaticResource ColorGold}"
+                               Margin="0,8,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

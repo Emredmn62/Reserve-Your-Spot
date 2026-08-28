@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Reserve_Your_Spot.ViewModels"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             xmlns:controls="clr-namespace:Reserve_Your_Spot.Controls"
+             x:Class="Reserve_Your_Spot.Views.Customer.HomePage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <RefreshView Command="{Binding LoadDataCommand}"
+                 IsRefreshing="{Binding IsBusy}"
+                 RefreshColor="{StaticResource ColorGold}">
+        <ScrollView>
+            <VerticalStackLayout Padding="0,0,0,24">
+
+                <!-- Top bar -->
+                <Grid ColumnDefinitions="*,52"
+                      Padding="24,56,24,0"
+                      Margin="0,0,0,20">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="{Binding GreetingText}"
+                               FontSize="22" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorWhite}" />
+                        <Label Text="What are you booking today?"
+                               FontSize="14" TextColor="{StaticResource ColorGrey}" />
+                    </VerticalStackLayout>
+                    <!-- Avatar -->
+                    <Border Grid.Column="1"
+                            BackgroundColor="{StaticResource ColorGold}"
+                            StrokeShape="Ellipse"
+                            Stroke="{StaticResource ColorGold}"
+                            StrokeThickness="2"
+                            HeightRequest="48" WidthRequest="48">
+                        <Label Text="{Binding UserInitials}"
+                               FontSize="18" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorBlack}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+                </Grid>
+
+                <!-- Search bar -->
+                <Border BackgroundColor="{StaticResource ColorSurface}"
+                        Stroke="{StaticResource ColorGold}"
+                        StrokeShape="RoundRectangle 14"
+                        StrokeThickness="1"
+                        Margin="24,0,24,24">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Label Grid.Column="0" Text="🔍" FontSize="18" Margin="14,0,8,0" VerticalOptions="Center" />
+                        <Entry Grid.Column="1"
+                               Placeholder="Search barbers, nails, PT…"
+                               PlaceholderColor="{StaticResource ColorGrey}"
+                               TextColor="{StaticResource ColorWhite}"
+                               BackgroundColor="Transparent"
+                               ReturnCommand="{Binding SearchCommand}"
+                               Margin="0,0,12,0" />
+                    </Grid>
+                </Border>
+
+                <!-- Categories -->
+                <Label Text="Categories"
+                       FontSize="18" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}"
+                       Margin="24,0,24,12" />
+                <CollectionView ItemsSource="{Binding Categories}"
+                                HeightRequest="80"
+                                SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.Header><BoxView WidthRequest="24" Color="Transparent"/></CollectionView.Header>
+                    <CollectionView.Footer><BoxView WidthRequest="24" Color="Transparent"/></CollectionView.Footer>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Category">
+                            <Border BackgroundColor="{StaticResource ColorSurface}"
+                                    Stroke="{StaticResource ColorSurface2}"
+                                    StrokeShape="RoundRectangle 14"
+                                    Padding="14,10">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding IconEmoji}" FontSize="22" HorizontalOptions="Center" />
+                                    <Label Text="{Binding Name}" FontSize="11"
+                                           TextColor="{StaticResource ColorWhite}"
+                                           HorizontalOptions="Center"
+                                           LineBreakMode="TailTruncation" MaxLines="1" />
+                                </VerticalStackLayout>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=FilterByCategoryCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Nearby -->
+                <Grid ColumnDefinitions="*,Auto" Padding="24,20,24,12">
+                    <Label Grid.Column="0" Text="Nearby" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource ColorWhite}" />
+                    <Label Grid.Column="1" Text="See all" FontSize="13" TextColor="{StaticResource ColorGold}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding SearchCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding NearbyBusinesses}"
+                                HeightRequest="230"
+                                SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="16" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.Header><BoxView WidthRequest="24" Color="Transparent"/></CollectionView.Header>
+                    <CollectionView.Footer><BoxView WidthRequest="24" Color="Transparent"/></CollectionView.Footer>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Business">
+                            <controls:BusinessCard Business="{Binding .}"
+                                                   WidthRequest="200"
+                                                   BusinessTapped="OnBusinessTapped" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No businesses nearby yet" TextColor="{StaticResource ColorGrey}"
+                               HorizontalOptions="Center" Margin="24" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+                <!-- Featured -->
+                <Grid ColumnDefinitions="*,Auto" Padding="24,20,24,12">
+                    <Label Grid.Column="0" Text="Featured ⭐" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource ColorWhite}" />
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding FeaturedBusinesses}"
+                                Margin="24,0"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Business">
+                            <controls:BusinessCard Business="{Binding .}" BusinessTapped="OnBusinessTapped" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No featured businesses yet" TextColor="{StaticResource ColorGrey}"
+                               HorizontalOptions="Center" Margin="24" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             x:Class="Reserve_Your_Spot.Views.Customer.StaffSelectionPage"
+             Title="Choose a Team Member"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0" Padding="24,16,24,0">
+            <VerticalStackLayout Spacing="16">
+                <Label Text="Choose a Team Member"
+                       FontSize="22" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}" />
+                <Label Text="{Binding Service.Name}"
+                       FontSize="14" TextColor="{StaticResource ColorGold}" />
+
+                <!-- Any Available -->
+                <Border x:Name="AnyCard"
+                        BackgroundColor="{StaticResource ColorSurface}"
+                        Stroke="{StaticResource ColorGold}"
+                        StrokeThickness="2"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="16">
+                    <HorizontalStackLayout Spacing="16">
+                        <Border BackgroundColor="{StaticResource ColorSurface2}"
+                                StrokeShape="Ellipse" Stroke="Transparent"
+                                HeightRequest="52" WidthRequest="52">
+                            <Label Text="👥" FontSize="26" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                            <Label Text="Any Available" FontSize="16" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorWhite}" />
+                            <Label Text="First available team member" FontSize="12"
+                                   TextColor="{StaticResource ColorGrey}" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectAnyStaffCommand}" />
+                    </Border.GestureRecognizers>
+                </Border>
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource ColorGold}" />
+
+                <!-- Staff list -->
+                <CollectionView ItemsSource="{Binding StaffList}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Staff">
+                            <Border BackgroundColor="{StaticResource ColorSurface}"
+                                    Stroke="{StaticResource ColorSurface2}"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="16"
+                                    Margin="0,0,0,12">
+                                <HorizontalStackLayout Spacing="16">
+                                    <Border BackgroundColor="{StaticResource ColorSurface2}"
+                                            StrokeShape="Ellipse"
+                                            Stroke="{StaticResource ColorGold}"
+                                            StrokeThickness="2"
+                                            HeightRequest="56" WidthRequest="56">
+                                        <Label Text="👤" FontSize="28"
+                                               HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                    <VerticalStackLayout Spacing="3" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}" FontSize="16" FontAttributes="Bold"
+                                               TextColor="{StaticResource ColorWhite}" />
+                                        <Label Text="{Binding Role}" FontSize="13"
+                                               TextColor="{StaticResource ColorGold}" />
+                                        <Label Text="{Binding Bio}" FontSize="12"
+                                               TextColor="{StaticResource ColorGrey}"
+                                               LineBreakMode="TailTruncation" MaxLines="1" />
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectStaffCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border Grid.Row="1" BackgroundColor="{StaticResource ColorBlack}"
+                Stroke="{StaticResource ColorSurface2}" StrokeShape="RoundRectangle 0"
+                Padding="24,12">
+            <Button Text="Continue →"
+                    Command="{Binding ContinueCommand}"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12" HeightRequest="52"
+                    FontAttributes="Bold" FontSize="16" />
+        </Border>
+    </Grid>
+</ContentPage>

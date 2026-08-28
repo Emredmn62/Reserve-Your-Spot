@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Reserve_Your_Spot.Views.Auth.LoginPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,60,32,32" Spacing="0">
+
+            <!-- Logo -->
+            <Border BackgroundColor="{StaticResource ColorGold}"
+                    StrokeShape="Ellipse"
+                    Stroke="Transparent"
+                    HeightRequest="72" WidthRequest="72"
+                    HorizontalOptions="Center"
+                    Margin="0,0,0,16">
+                <Label Text="BL"
+                       FontSize="26" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorBlack}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Border>
+
+            <!-- App name -->
+            <Label Text="{Binding AppName}"
+                   FontSize="28" FontAttributes="Bold"
+                   TextColor="{StaticResource ColorGold}"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,8" />
+
+            <Label Text="Welcome back"
+                   FontSize="18"
+                   TextColor="{StaticResource ColorWhite}"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,40" />
+
+            <!-- Error message -->
+            <Border BackgroundColor="#3D1515"
+                    Stroke="{StaticResource ColorError}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="12"
+                    IsVisible="{Binding HasError}"
+                    Margin="0,0,0,16">
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="{StaticResource ColorError}"
+                       FontSize="14" />
+            </Border>
+
+            <!-- Email -->
+            <Label Text="Email" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="0"
+                    Margin="0,0,0,16">
+                <Entry Text="{Binding Email}"
+                       Placeholder="you@example.com"
+                       Keyboard="Email"
+                       BackgroundColor="Transparent"
+                       TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}"
+                       Margin="12,0" />
+            </Border>
+
+            <!-- Password -->
+            <Label Text="Password" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="0"
+                    Margin="0,0,0,8">
+                <Grid ColumnDefinitions="*,48">
+                    <Entry Grid.Column="0"
+                           Text="{Binding Password}"
+                           Placeholder="••••••••"
+                           IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InverseBool}}"
+                           BackgroundColor="Transparent"
+                           TextColor="{StaticResource ColorWhite}"
+                           PlaceholderColor="{StaticResource ColorGrey}"
+                           Margin="12,0" />
+                    <Label Grid.Column="1"
+                           Text="{Binding IsPasswordVisible, Converter={StaticResource BoolToEyeIcon}}"
+                           FontSize="18"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           TextColor="{StaticResource ColorGrey}">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding TogglePasswordVisibilityCommand}" />
+                        </Label.GestureRecognizers>
+                    </Label>
+                </Grid>
+            </Border>
+
+            <!-- Forgot password -->
+            <Label Text="Forgot password?"
+                   TextColor="{StaticResource ColorGold}"
+                   FontSize="13"
+                   HorizontalOptions="End"
+                   Margin="0,0,0,28">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <!-- Sign In button -->
+            <Button Text="Sign In"
+                    Command="{Binding SignInCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12"
+                    HeightRequest="52"
+                    FontAttributes="Bold"
+                    FontSize="16" />
+
+            <!-- Activity indicator -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource ColorGold}"
+                               Margin="0,8,0,0" />
+
+            <!-- Register link -->
+            <Label HorizontalOptions="Center" Margin="0,24,0,0">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Don't have an account? " TextColor="{StaticResource ColorGrey}" FontSize="14" />
+                        <Span Text="Create one" TextColor="{StaticResource ColorGold}" FontSize="14" FontAttributes="Bold">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding NavigateToRegisterCommand}" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

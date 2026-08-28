@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Reserve_Your_Spot.ViewModels"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             x:Class="Reserve_Your_Spot.Views.Customer.DateTimeSelectionPage"
+             Title="Pick a Date &amp; Time"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0" Padding="24,16,24,0">
+            <VerticalStackLayout Spacing="20">
+                <Label Text="Pick a Date &amp; Time"
+                       FontSize="22" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}" />
+                <Label Text="{Binding Service.Name}"
+                       FontSize="14" TextColor="{StaticResource ColorGold}" />
+
+                <!-- Month header -->
+                <Grid ColumnDefinitions="40,*,40">
+                    <Border Grid.Column="0"
+                            BackgroundColor="{StaticResource ColorSurface}"
+                            StrokeShape="Ellipse" Stroke="Transparent"
+                            HeightRequest="36" WidthRequest="36">
+                        <Label Text="‹" FontSize="20" TextColor="{StaticResource ColorWhite}"
+                               HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding PreviousMonthCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Border>
+                    <Label Grid.Column="1"
+                           Text="{Binding DisplayMonth, StringFormat='{0:MMMM yyyy}'}"
+                           FontSize="17" FontAttributes="Bold"
+                           TextColor="{StaticResource ColorWhite}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                    <Border Grid.Column="2"
+                            BackgroundColor="{StaticResource ColorSurface}"
+                            StrokeShape="Ellipse" Stroke="Transparent"
+                            HeightRequest="36" WidthRequest="36">
+                        <Label Text="›" FontSize="20" TextColor="{StaticResource ColorWhite}"
+                               HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding NextMonthCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Border>
+                </Grid>
+
+                <!-- Day headers -->
+                <Grid ColumnDefinitions="*,*,*,*,*,*,*">
+                    <Label Grid.Column="0" Text="Mo" FontSize="12" TextColor="{StaticResource ColorGrey}" HorizontalOptions="Center" />
+                    <Label Grid.Column="1" Text="Tu" FontSize="12" TextColor="{StaticResource ColorGrey}" HorizontalOptions="Center" />
+                    <Label Grid.Column="2" Text="We" FontSize="12" TextColor="{StaticResource ColorGrey}" HorizontalOptions="Center" />
+                    <Label Grid.Column="3" Text="Th" FontSize="12" TextColor="{StaticResource ColorGrey}" HorizontalOptions="Center" />
+                    <Label Grid.Column="4" Text="Fr" FontSize="12" TextColor="{StaticResource ColorGrey}" HorizontalOptions="Center" />
+                    <Label Grid.Column="5" Text="Sa" FontSize="12" TextColor="{StaticResource ColorGrey}" HorizontalOptions="Center" />
+                    <Label Grid.Column="6" Text="Su" FontSize="12" TextColor="{StaticResource ColorGrey}" HorizontalOptions="Center" />
+                </Grid>
+
+                <!-- Calendar days -->
+                <CollectionView ItemsSource="{Binding CalendarDays}"
+                                SelectionMode="None"
+                                HeightRequest="260">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical" Span="7" VerticalItemSpacing="4" HorizontalItemSpacing="4" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:CalendarDay">
+                            <Border BackgroundColor="{Binding BackgroundColor}"
+                                    StrokeShape="Ellipse"
+                                    Stroke="Transparent"
+                                    HeightRequest="38" WidthRequest="38"
+                                    HorizontalOptions="Center">
+                                <Label Text="{Binding DayNumber}"
+                                       FontSize="14"
+                                       TextColor="{Binding TextColor}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectDateCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Time slots -->
+                <Label Text="Available Times" FontSize="17" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource ColorGold}" />
+
+                <FlexLayout x:Name="SlotsLayout"
+                            BindableLayout.ItemsSource="{Binding TimeSlots}"
+                            Wrap="Wrap"
+                            JustifyContent="Start"
+                            AlignItems="Start">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:TimeSlot">
+                            <Border BackgroundColor="{Binding BackgroundColor}"
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="Transparent"
+                                    Padding="14,10"
+                                    Margin="0,0,8,8">
+                                <Label Text="{Binding DisplayLabel}"
+                                       FontSize="13" FontAttributes="Bold"
+                                       TextColor="{Binding TextColor}" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.SelectTimeSlotCommand}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border Grid.Row="1" BackgroundColor="{StaticResource ColorBlack}"
+                Stroke="{StaticResource ColorSurface2}" StrokeShape="RoundRectangle 0"
+                Padding="24,12">
+            <Button Text="Continue →"
+                    Command="{Binding ContinueCommand}"
+                    IsEnabled="{Binding CanContinue}"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12" HeightRequest="52"
+                    FontAttributes="Bold" FontSize="16" />
+        </Border>
+    </Grid>
+</ContentPage>

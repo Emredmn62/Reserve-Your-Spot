@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Reserve_Your_Spot.Controls.ServiceCard">
+    <Border x:Name="CardBorder"
+            BackgroundColor="{StaticResource ColorSurface}"
+            Stroke="{StaticResource ColorSurface2}"
+            StrokeThickness="1.5"
+            StrokeShape="RoundRectangle 12"
+            Padding="14"
+            Margin="0,0,0,10">
+        <Grid ColumnDefinitions="*,Auto">
+            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                <Label x:Name="NameLabel"
+                       FontSize="15" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}" />
+                <Label x:Name="DurationLabel"
+                       FontSize="12" TextColor="{StaticResource ColorGrey}" />
+                <Label x:Name="DescLabel"
+                       FontSize="12" TextColor="{StaticResource ColorGrey}"
+                       LineBreakMode="TailTruncation" MaxLines="2" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" Spacing="4"
+                                 HorizontalOptions="End" VerticalOptions="Center"
+                                 MinimumWidthRequest="80">
+                <Label x:Name="PriceLabel"
+                       FontSize="16" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}"
+                       HorizontalOptions="End" />
+                <Label x:Name="DepositLabel"
+                       FontSize="11" TextColor="{StaticResource ColorGold}"
+                       HorizontalOptions="End" />
+            </VerticalStackLayout>
+        </Grid>
+    </Border>
+</ContentView>

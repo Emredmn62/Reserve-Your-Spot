@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Reserve_Your_Spot.ViewModels"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             xmlns:controls="clr-namespace:Reserve_Your_Spot.Controls"
+             x:Class="Reserve_Your_Spot.Views.Customer.SearchPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*">
+
+        <!-- Search bar (sticky) -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto"
+              Padding="16,52,16,12"
+              BackgroundColor="{StaticResource ColorBlack}">
+            <Border Grid.Column="0"
+                    BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorGold}"
+                    StrokeShape="RoundRectangle 12"
+                    StrokeThickness="1">
+                <SearchBar Text="{Binding SearchQuery}"
+                           Placeholder="Search businesses…"
+                           PlaceholderColor="{StaticResource ColorGrey}"
+                           TextColor="{StaticResource ColorWhite}"
+                           BackgroundColor="Transparent"
+                           SearchCommand="{Binding SearchCommand}"
+                           CancelButtonColor="{StaticResource ColorGold}" />
+            </Border>
+        </Grid>
+
+        <!-- Category chips -->
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Categories}"
+                        HeightRequest="50"
+                        Margin="0,0,0,12">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.Header><BoxView WidthRequest="16" Color="Transparent"/></CollectionView.Header>
+            <CollectionView.Footer><BoxView WidthRequest="16" Color="Transparent"/></CollectionView.Footer>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Category">
+                    <Border Padding="12,8"
+                            StrokeShape="RoundRectangle 20">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding .}" Value="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=SelectedCategory}">
+                                <Setter Property="BackgroundColor" Value="{StaticResource ColorGold}" />
+                                <Setter Property="Stroke" Value="{StaticResource ColorGold}" />
+                            </DataTrigger>
+                        </Border.Triggers>
+                        <Label>
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="{Binding IconEmoji}" FontSize="14" />
+                                    <Span Text=" " />
+                                    <Span Text="{Binding Name}" FontSize="13" TextColor="{StaticResource ColorWhite}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=SelectCategoryCommand}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Toggle: List / Map -->
+        <HorizontalStackLayout Grid.Row="2" Spacing="8" Margin="16,0,0,12">
+            <Border Padding="14,8" StrokeShape="RoundRectangle 8">
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border" Binding="{Binding IsMapView}" Value="False">
+                        <Setter Property="BackgroundColor" Value="{StaticResource ColorGold}" />
+                        <Setter Property="Stroke" Value="{StaticResource ColorGold}" />
+                    </DataTrigger>
+                </Border.Triggers>
+                <Label Text="List" FontSize="13" TextColor="{StaticResource ColorWhite}" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleMapViewCommand}" />
+                </Border.GestureRecognizers>
+            </Border>
+            <Border Padding="14,8" StrokeShape="RoundRectangle 8">
+                <Border.Triggers>
+                    <DataTrigger TargetType="Border" Binding="{Binding IsMapView}" Value="True">
+                        <Setter Property="BackgroundColor" Value="{StaticResource ColorGold}" />
+                        <Setter Property="Stroke" Value="{StaticResource ColorGold}" />
+                    </DataTrigger>
+                </Border.Triggers>
+                <Label Text="Map 🗺️" FontSize="13" TextColor="{StaticResource ColorWhite}" />
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ToggleMapViewCommand}" />
+                </Border.GestureRecognizers>
+            </Border>
+        </HorizontalStackLayout>
+
+        <!-- Results -->
+        <CollectionView Grid.Row="3"
+                        ItemsSource="{Binding Results}"
+                        Margin="16,0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Business">
+                    <controls:BusinessCard Business="{Binding .}" BusinessTapped="OnBusinessTapped" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12" Margin="0,60,0,0">
+                    <Label Text="🔍" FontSize="48" HorizontalOptions="Center" />
+                    <Label Text="Search for a business above" TextColor="{StaticResource ColorGrey}"
+                           FontSize="16" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <!-- Busy -->
+        <ActivityIndicator Grid.Row="3" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource ColorGold}" VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

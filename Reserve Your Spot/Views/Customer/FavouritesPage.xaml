@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             xmlns:controls="clr-namespace:Reserve_Your_Spot.Controls"
+             x:Class="Reserve_Your_Spot.Views.Customer.FavouritesPage"
+             Title="Favourites"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <Grid RowDefinitions="Auto,*">
+        <Label Grid.Row="0" Text="Favourites ❤️"
+               FontSize="24" FontAttributes="Bold"
+               TextColor="{StaticResource ColorWhite}"
+               Padding="24,52,24,16" />
+
+        <RefreshView Grid.Row="1"
+                     Command="{Binding LoadFavouritesCommand}"
+                     IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding FavouriteBusinesses}"
+                            Margin="16,0">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="12" VerticalItemSpacing="0" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Business">
+                        <controls:BusinessCard Business="{Binding .}" BusinessTapped="OnBusinessTapped" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12" Margin="0,80,0,0">
+                        <Label Text="🤍" FontSize="60" HorizontalOptions="Center" />
+                        <Label Text="No favourites yet" FontSize="18" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorWhite}" HorizontalOptions="Center" />
+                        <Label Text="Tap the heart on any business to save it here"
+                               FontSize="14" TextColor="{StaticResource ColorGrey}"
+                               HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </RefreshView>
+    </Grid>
+</ContentPage>

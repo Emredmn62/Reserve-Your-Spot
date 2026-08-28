@@ -1,0 +1,15 @@
+using Reserve_Your_Spot.Models;
+
+namespace Reserve_Your_Spot.Services;
+
+public interface IBookingService
+{
+    Task<List<TimeSlot>> GetAvailableSlotsAsync(string businessId, string? staffId, DateTime date, int durationMinutes);
+    Task<Booking?> CreateBookingAsync(Booking booking);
+    Task<List<Booking>> GetCustomerBookingsAsync(string customerId);
+    Task<List<Booking>> GetBusinessBookingsAsync(string businessId, DateTime? date = null);
+    Task<bool> CancelBookingAsync(string bookingId, string reason);
+    Task<bool> ConfirmBookingAsync(string bookingId);
+    Task<bool> MarkNoShowAsync(string bookingId);
+    Task<bool> CompleteBookingAsync(string bookingId);
+}

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             xmlns:controls="clr-namespace:Reserve_Your_Spot.Controls"
+             xmlns:converters="clr-namespace:Reserve_Your_Spot.Converters"
+             x:Class="Reserve_Your_Spot.Views.BusinessPortal.DashboardPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ContentPage.Resources>
+        <converters:PriceFormatter x:Key="PriceFmt" />
+    </ContentPage.Resources>
+
+    <RefreshView Command="{Binding LoadDataCommand}"
+                 IsRefreshing="{Binding IsBusy}"
+                 RefreshColor="{StaticResource ColorGold}">
+        <ScrollView>
+            <VerticalStackLayout Padding="24,52,24,32" Spacing="24">
+
+                <!-- Header -->
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="{Binding BusinessName}"
+                           FontSize="24" FontAttributes="Bold"
+                           TextColor="{StaticResource ColorWhite}" />
+                    <Label Text="{Binding TodayDate}"
+                           FontSize="14" TextColor="{StaticResource ColorGold}" />
+                </VerticalStackLayout>
+
+                <!-- Error -->
+                <Border BackgroundColor="#3D1515"
+                        Stroke="{StaticResource ColorError}"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="12"
+                        IsVisible="{Binding HasError}">
+                    <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ColorError}" FontSize="14" />
+                </Border>
+
+                <!-- Stats row -->
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
+                    <Border Grid.Column="0"
+                            BackgroundColor="{StaticResource ColorSurface}"
+                            Stroke="{StaticResource ColorSurface2}"
+                            StrokeShape="RoundRectangle 14"
+                            Padding="14,12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="📅" FontSize="22" HorizontalOptions="Center" />
+                            <Label Text="{Binding TodayBookingCount}"
+                                   FontSize="24" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorWhite}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Bookings" FontSize="11"
+                                   TextColor="{StaticResource ColorGrey}"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1"
+                            BackgroundColor="{StaticResource ColorSurface}"
+                            Stroke="{StaticResource ColorSurface2}"
+                            StrokeShape="RoundRectangle 14"
+                            Padding="14,12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="💰" FontSize="22" HorizontalOptions="Center" />
+                            <Label Text="{Binding TodayRevenue, Converter={StaticResource PriceFmt}}"
+                                   FontSize="20" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorGold}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Revenue" FontSize="11"
+                                   TextColor="{StaticResource ColorGrey}"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2"
+                            BackgroundColor="{StaticResource ColorSurface}"
+                            Stroke="{StaticResource ColorSurface2}"
+                            StrokeShape="RoundRectangle 14"
+                            Padding="14,12">
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="⏳" FontSize="22" HorizontalOptions="Center" />
+                            <Label Text="{Binding OutstandingBalance, Converter={StaticResource PriceFmt}}"
+                                   FontSize="18" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorWhite}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Outstanding" FontSize="11"
+                                   TextColor="{StaticResource ColorGrey}"
+                                   HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <!-- Quick actions -->
+                <HorizontalStackLayout Spacing="12">
+                    <Button Text="+ Manual Booking"
+                            Command="{Binding CreateManualBookingCommand}"
+                            BackgroundColor="{StaticResource ColorGold}"
+                            TextColor="{StaticResource ColorBlack}"
+                            CornerRadius="10" HeightRequest="44"
+                            FontAttributes="Bold" FontSize="14"
+                            Padding="16,0" />
+                    <Button Text="Block Time"
+                            Command="{Binding BlockTimeCommand}"
+                            BackgroundColor="{StaticResource ColorSurface}"
+                            TextColor="{StaticResource ColorWhite}"
+                            BorderColor="{StaticResource ColorSurface2}"
+                            BorderWidth="1"
+                            CornerRadius="10" HeightRequest="44"
+                            FontSize="14"
+                            Padding="16,0" />
+                </HorizontalStackLayout>
+
+                <!-- Today's schedule -->
+                <Label Text="Today's Schedule"
+                       FontSize="18" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}" />
+
+                <CollectionView ItemsSource="{Binding TodaysBookings}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Booking">
+                            <controls:BookingCard Booking="{Binding .}" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="8" Margin="0,24,0,0">
+                            <Label Text="🎉" FontSize="40" HorizontalOptions="Center" />
+                            <Label Text="No bookings today — enjoy the rest!"
+                                   FontSize="14" TextColor="{StaticResource ColorGrey}"
+                                   HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </RefreshView>
+</ContentPage>

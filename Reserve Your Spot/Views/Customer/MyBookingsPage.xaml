@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Reserve_Your_Spot.ViewModels"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             xmlns:controls="clr-namespace:Reserve_Your_Spot.Controls"
+             x:Class="Reserve_Your_Spot.Views.Customer.MyBookingsPage"
+             Title="My Bookings"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <Grid RowDefinitions="Auto,Auto,*">
+
+        <!-- Page title -->
+        <Label Grid.Row="0" Text="My Bookings"
+               FontSize="24" FontAttributes="Bold"
+               TextColor="{StaticResource ColorWhite}"
+               Padding="24,52,24,16" />
+
+        <!-- Tab bar -->
+        <HorizontalStackLayout Grid.Row="1" Padding="24,0,24,12" Spacing="4">
+            <Border x:Name="TabUpcoming" Padding="16,8"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 8">
+                <Label Text="Upcoming" FontSize="13" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorBlack}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="Upcoming" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="Upcoming" />
+                </Border.GestureRecognizers>
+            </Border>
+            <Border x:Name="TabPast" Padding="16,8"
+                    BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 8">
+                <Label Text="Past" FontSize="13" TextColor="{StaticResource ColorGrey}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="Past" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="Past" />
+                </Border.GestureRecognizers>
+            </Border>
+            <Border x:Name="TabCancelled" Padding="16,8"
+                    BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 8">
+                <Label Text="Cancelled" FontSize="13" TextColor="{StaticResource ColorGrey}">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="Cancelled" />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="Cancelled" />
+                </Border.GestureRecognizers>
+            </Border>
+        </HorizontalStackLayout>
+
+        <!-- Content -->
+        <Grid Grid.Row="2">
+            <!-- Upcoming -->
+            <RefreshView x:Name="UpcomingPanel"
+                         Command="{Binding LoadBookingsCommand}"
+                         IsRefreshing="{Binding IsBusy}">
+                <CollectionView ItemsSource="{Binding UpcomingBookings}"
+                                Margin="24,0">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Booking">
+                            <VerticalStackLayout>
+                                <controls:BookingCard Booking="{Binding .}" />
+                                <Button Text="Cancel"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MyBookingsViewModel}}, Path=CancelBookingCommand}"
+                                        CommandParameter="{Binding .}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource ColorError}"
+                                        BorderColor="{StaticResource ColorError}"
+                                        BorderWidth="1"
+                                        CornerRadius="8" HeightRequest="38"
+                                        FontSize="13" Margin="0,0,0,12" />
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12" Margin="0,60,0,0">
+                            <Label Text="📅" FontSize="48" HorizontalOptions="Center" />
+                            <Label Text="No upcoming bookings" TextColor="{StaticResource ColorGrey}"
+                                   FontSize="16" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </RefreshView>
+
+            <!-- Past -->
+            <CollectionView x:Name="PastPanel"
+                            ItemsSource="{Binding PastBookings}"
+                            IsVisible="False"
+                            Margin="24,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Booking">
+                        <VerticalStackLayout>
+                            <controls:BookingCard Booking="{Binding .}" />
+                            <Button Text="Book Again"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MyBookingsViewModel}}, Path=RebookCommand}"
+                                    CommandParameter="{Binding .}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource ColorGold}"
+                                    BorderColor="{StaticResource ColorGold}"
+                                    BorderWidth="1"
+                                    CornerRadius="8" HeightRequest="38"
+                                    FontSize="13" Margin="0,0,0,12" />
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label Text="No past bookings" TextColor="{StaticResource ColorGrey}"
+                           FontSize="16" HorizontalOptions="Center" Margin="0,60,0,0" />
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+            <!-- Cancelled -->
+            <CollectionView x:Name="CancelledPanel"
+                            ItemsSource="{Binding CancelledBookings}"
+                            IsVisible="False"
+                            Margin="24,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Booking">
+                        <controls:BookingCard Booking="{Binding .}" />
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label Text="No cancelled bookings" TextColor="{StaticResource ColorGrey}"
+                           FontSize="16" HorizontalOptions="Center" Margin="0,60,0,0" />
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </Grid>
+    </Grid>
+</ContentPage>

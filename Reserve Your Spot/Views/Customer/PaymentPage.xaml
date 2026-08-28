@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Reserve_Your_Spot.Converters"
+             x:Class="Reserve_Your_Spot.Views.Customer.PaymentPage"
+             Title="Confirm &amp; Pay"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ContentPage.Resources>
+        <converters:PriceFormatter x:Key="PriceFmt" />
+        <converters:DateFormatter x:Key="DateFmt" />
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0" Padding="24,16,24,0">
+            <VerticalStackLayout Spacing="20">
+
+                <Label Text="Confirm &amp; Pay"
+                       FontSize="22" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}" />
+
+                <!-- Order summary card -->
+                <Border BackgroundColor="{StaticResource ColorSurface}"
+                        Stroke="{StaticResource ColorSurface2}"
+                        StrokeShape="RoundRectangle 16"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="{Binding Business.Name}"
+                               FontSize="17" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorWhite}" />
+                        <Label Text="{Binding Service.Name}"
+                               FontSize="14" TextColor="{StaticResource ColorGrey}" />
+                        <Label Text="{Binding SelectedDateTime, Converter={StaticResource DateFmt}, ConverterParameter=long}"
+                               FontSize="14" TextColor="{StaticResource ColorGrey}" />
+                        <Label Text="{Binding SelectedStaff.Name, StringFormat='with {0}', FallbackValue='Any Available'}"
+                               FontSize="14" TextColor="{StaticResource ColorGrey}" />
+
+                        <BoxView Color="{StaticResource ColorSurface2}" HeightRequest="1" />
+
+                        <!-- Price breakdown -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Service price" FontSize="14"
+                                   TextColor="{StaticResource ColorGrey}" />
+                            <Label Grid.Column="1" Text="{Binding TotalPrice, Converter={StaticResource PriceFmt}}"
+                                   FontSize="14" TextColor="{StaticResource ColorWhite}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Deposit due now" FontSize="16" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorWhite}" />
+                            <Label Grid.Column="1" Text="{Binding DepositAmount, Converter={StaticResource PriceFmt}}"
+                                   FontSize="16" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorGold}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Pay in person" FontSize="13"
+                                   TextColor="{StaticResource ColorGrey}" />
+                            <Label Grid.Column="1" Text="{Binding RemainingBalance, Converter={StaticResource PriceFmt}}"
+                                   FontSize="13" TextColor="{StaticResource ColorGrey}" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Card input -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Payment Details"
+                           FontSize="17" FontAttributes="Bold"
+                           TextColor="{StaticResource ColorWhite}" />
+
+                    <Label Text="Card Number" TextColor="{StaticResource ColorGrey}" FontSize="13" />
+                    <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                            StrokeShape="RoundRectangle 12" Padding="0">
+                        <Entry Text="{Binding CardNumber}" Placeholder="1234 5678 9012 3456"
+                               Keyboard="Numeric" MaxLength="19"
+                               BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                               PlaceholderColor="{StaticResource ColorGrey}" Margin="14,0" />
+                    </Border>
+
+                    <Grid ColumnDefinitions="*,12,*">
+                        <VerticalStackLayout Grid.Column="0" Spacing="6">
+                            <Label Text="Expiry Date" TextColor="{StaticResource ColorGrey}" FontSize="13" />
+                            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                                    StrokeShape="RoundRectangle 12" Padding="0">
+                                <Entry Text="{Binding ExpiryDate}" Placeholder="MM/YY"
+                                       Keyboard="Numeric" MaxLength="5"
+                                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                                       PlaceholderColor="{StaticResource ColorGrey}" Margin="14,0" />
+                            </Border>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" Spacing="6">
+                            <Label Text="CVV" TextColor="{StaticResource ColorGrey}" FontSize="13" />
+                            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                                    StrokeShape="RoundRectangle 12" Padding="0">
+                                <Entry Text="{Binding CVV}" Placeholder="•••"
+                                       IsPassword="True" Keyboard="Numeric" MaxLength="4"
+                                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                                       PlaceholderColor="{StaticResource ColorGrey}" Margin="14,0" />
+                            </Border>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- Stripe badge -->
+                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Label Text="🔒" FontSize="16" VerticalOptions="Center" />
+                        <Label Text="Secured by Stripe" FontSize="13"
+                               TextColor="{StaticResource ColorGrey}"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Error -->
+                <Border BackgroundColor="#3D1515"
+                        Stroke="{StaticResource ColorError}"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="12"
+                        IsVisible="{Binding HasError}">
+                    <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ColorError}" FontSize="14" />
+                </Border>
+
+                <!-- Cancellation note -->
+                <Label Text="By paying the deposit you agree to the cancellation policy. The deposit may be non-refundable depending on the business."
+                       FontSize="11" TextColor="{StaticResource ColorGrey}"
+                       LineBreakMode="WordWrap" HorizontalTextAlignment="Center" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border Grid.Row="1" BackgroundColor="{StaticResource ColorBlack}"
+                Stroke="{StaticResource ColorSurface2}" StrokeShape="RoundRectangle 0"
+                Padding="24,12">
+            <VerticalStackLayout Spacing="8">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource ColorGold}" />
+                <Button Command="{Binding PayDepositCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"
+                        BackgroundColor="{StaticResource ColorGold}"
+                        TextColor="{StaticResource ColorBlack}"
+                        CornerRadius="12" HeightRequest="52"
+                        FontAttributes="Bold" FontSize="16">
+                    <Button.Text>
+                        <MultiBinding StringFormat="Pay Deposit £{0:F2}">
+                            <Binding Path="DepositAmount" />
+                        </MultiBinding>
+                    </Button.Text>
+                </Button>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

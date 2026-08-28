@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             x:Class="Reserve_Your_Spot.Views.Customer.CustomerProfilePage"
+             Title="Profile"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,52,24,32" Spacing="24">
+
+            <!-- Avatar + name -->
+            <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                <Border BackgroundColor="{StaticResource ColorGold}"
+                        StrokeShape="Ellipse"
+                        Stroke="{StaticResource ColorGold}"
+                        HeightRequest="88" WidthRequest="88"
+                        HorizontalOptions="Center">
+                    <Label Text="{Binding UserInitials}"
+                           FontSize="34" FontAttributes="Bold"
+                           TextColor="{StaticResource ColorBlack}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+                <Label Text="{Binding CurrentUser.FullName}"
+                       FontSize="22" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}"
+                       HorizontalOptions="Center" />
+                <Label Text="{Binding CurrentUser.Email}"
+                       FontSize="14" TextColor="{StaticResource ColorGrey}"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <!-- Loyalty cards -->
+            <VerticalStackLayout Spacing="12">
+                <Label Text="My Loyalty Cards" FontSize="18" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}" />
+                <CollectionView ItemsSource="{Binding LoyaltyCards}" HeightRequest="120">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="16" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:LoyaltyCard">
+                            <Border BackgroundColor="{StaticResource ColorGold}"
+                                    StrokeShape="RoundRectangle 16"
+                                    Stroke="Transparent"
+                                    Padding="16"
+                                    WidthRequest="200">
+                                <VerticalStackLayout Spacing="8">
+                                    <Label Text="{Binding Business.Name}"
+                                           FontSize="14" FontAttributes="Bold"
+                                           TextColor="{StaticResource ColorBlack}"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding RewardDescription}"
+                                           FontSize="11"
+                                           TextColor="#80000000"
+                                           LineBreakMode="TailTruncation" />
+                                    <!-- Stamps -->
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="{Binding TotalStamps, StringFormat='{0} / '}"
+                                               FontSize="20" FontAttributes="Bold"
+                                               TextColor="{StaticResource ColorBlack}" />
+                                        <Label Text="{Binding RequiredStamps}"
+                                               FontSize="20"
+                                               TextColor="#80000000" />
+                                        <Label Text="stamps" FontSize="13"
+                                               TextColor="{StaticResource ColorBlack}"
+                                               VerticalOptions="End" Margin="0,0,0,2" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No loyalty cards yet. Start booking!" TextColor="{StaticResource ColorGrey}"
+                               FontSize="14" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Settings section -->
+            <VerticalStackLayout Spacing="2">
+                <Label Text="Account" FontSize="14" TextColor="{StaticResource ColorGrey}"
+                       Margin="0,0,0,8" />
+                <Border BackgroundColor="{StaticResource ColorSurface}"
+                        Stroke="{StaticResource ColorSurface2}"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="0">
+                    <VerticalStackLayout>
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Edit Profile" FontSize="15"
+                                   TextColor="{StaticResource ColorWhite}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="›" FontSize="20"
+                                   TextColor="{StaticResource ColorGrey}" VerticalOptions="Center">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding EditProfileCommand}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding EditProfileCommand}" />
+                            </Grid.GestureRecognizers>
+                        </Grid>
+                        <BoxView Color="{StaticResource ColorSurface2}" HeightRequest="1" Margin="16,0" />
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Notifications" FontSize="15"
+                                   TextColor="{StaticResource ColorWhite}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="›" FontSize="20"
+                                   TextColor="{StaticResource ColorGrey}" VerticalOptions="Center" />
+                        </Grid>
+                        <BoxView Color="{StaticResource ColorSurface2}" HeightRequest="1" Margin="16,0" />
+                        <Grid Padding="16,14" ColumnDefinitions="*,Auto">
+                            <Label Grid.Column="0" Text="Help &amp; Support" FontSize="15"
+                                   TextColor="{StaticResource ColorWhite}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="›" FontSize="20"
+                                   TextColor="{StaticResource ColorGrey}" VerticalOptions="Center" />
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Sign Out -->
+                <Button Text="Sign Out"
+                        Command="{Binding SignOutCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource ColorError}"
+                        BorderColor="{StaticResource ColorError}"
+                        BorderWidth="1"
+                        CornerRadius="12"
+                        HeightRequest="48"
+                        FontSize="15"
+                        Margin="0,16,0,0" />
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

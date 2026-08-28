@@ -1,0 +1,32 @@
+namespace Reserve_Your_Spot.Constants;
+
+public static class AppConstants
+{
+    public const string AppName = "BookLocal";
+    public const string SupabaseUrl = "YOUR_SUPABASE_URL";
+    public const string SupabaseAnonKey = "YOUR_SUPABASE_ANON_KEY";
+    public const string StripePublishableKey = "YOUR_STRIPE_PUBLISHABLE_KEY";
+    public const string GoogleMapsKey = "YOUR_GOOGLE_MAPS_KEY";
+    public const decimal PlatformFeePercent = 0.10m;
+    public const decimal ProMonthlyPrice = 19.99m;
+    public const decimal PremiumMonthlyPrice = 49.99m;
+    public const int FreeBookingsLimit = 20;
+
+    // Route names
+    public const string RouteOnboarding = "onboarding";
+    public const string RouteLogin = "login";
+    public const string RouteRegister = "register";
+    public const string RouteBusinessRegister = "businessregister";
+    public const string RouteHome = "//home";
+    public const string RouteSearch = "//search";
+    public const string RouteMyBookings = "//mybookings";
+    public const string RouteFavourites = "//favourites";
+    public const string RouteProfile = "//profile";
+    public const string RouteBusinessDashboard = "//dashboard";
+    public const string RouteBusinessProfile = "businessprofile";
+    public const string RouteServiceSelection = "serviceselection";
+    public const string RouteStaffSelection = "staffselection";
+    public const string RouteDateTimeSelection = "datetimeselection";
+    public const string RoutePayment = "payment";
+    public const string RouteBookingConfirmation = "bookingconfirmation";
+}

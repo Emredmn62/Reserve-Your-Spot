@@ -1,0 +1,41 @@
+# ---- .NET / Visual Studio ----
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userprefs
+*.cache
+project.lock.json
+artifacts/
+
+# ---- MAUI / Android / iOS build output ----
+*.apk
+*.aab
+*.ipa
+*.app
+*.keystore
+*.jks
+*.mobileprovision
+*.p12
+
+# ---- Node / Expo / Next.js ----
+node_modules/
+.expo/
+.expo-shared/
+dist/
+web-build/
+.next/
+out/
+*.tsbuildinfo
+
+# ---- Env / secrets ----
+.env
+.env.*
+!.env.example
+*.local
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+*.log

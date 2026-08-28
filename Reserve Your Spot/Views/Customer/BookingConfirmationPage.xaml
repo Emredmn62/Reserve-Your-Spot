@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Reserve_Your_Spot.Converters"
+             x:Class="Reserve_Your_Spot.Views.Customer.BookingConfirmationPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ContentPage.Resources>
+        <converters:DateFormatter x:Key="DateFmt" />
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,60,32,32" Spacing="24">
+
+            <!-- Checkmark animation -->
+            <Grid HorizontalOptions="Center" HeightRequest="120" WidthRequest="120">
+                <Border BackgroundColor="#22C9A84C"
+                        StrokeShape="Ellipse"
+                        Stroke="{StaticResource ColorGold}"
+                        StrokeThickness="3"
+                        HeightRequest="120" WidthRequest="120" />
+                <Label Text="✓"
+                       FontSize="56" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorGold}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Grid>
+
+            <Label Text="Booking Confirmed!"
+                   FontSize="28" FontAttributes="Bold"
+                   TextColor="{StaticResource ColorWhite}"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+
+            <Label Text="You'll receive a confirmation shortly. See you soon!"
+                   FontSize="15" TextColor="{StaticResource ColorGrey}"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center" />
+
+            <!-- Booking details card -->
+            <Border BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorGold}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 16"
+                    Padding="20">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="{Binding Booking.Business.Name}"
+                           FontSize="18" FontAttributes="Bold"
+                           TextColor="{StaticResource ColorWhite}" />
+                    <Label Text="{Binding Booking.Service.Name}"
+                           FontSize="14" TextColor="{StaticResource ColorGold}" />
+                    <BoxView Color="{StaticResource ColorSurface2}" HeightRequest="1" />
+                    <Label Text="{Binding Booking.StartTime, Converter={StaticResource DateFmt}, ConverterParameter=long}"
+                           FontSize="14" TextColor="{StaticResource ColorWhite}" />
+                    <Label Text="{Binding Booking.Staff.Name, StringFormat='with {0}', FallbackValue='Any Available'}"
+                           FontSize="14" TextColor="{StaticResource ColorGrey}" />
+                    <!-- Deposit paid badge -->
+                    <Border BackgroundColor="#22C9A84C"
+                            Stroke="{StaticResource ColorGold}"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="10,6"
+                            HorizontalOptions="Start">
+                        <Label Text="✓ Deposit Paid"
+                               FontSize="13" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorGold}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Add to Calendar -->
+            <Button Text="📅 Add to Calendar"
+                    Command="{Binding AddToCalendarCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource ColorGold}"
+                    BorderColor="{StaticResource ColorGold}"
+                    BorderWidth="1.5"
+                    CornerRadius="12"
+                    HeightRequest="52"
+                    FontAttributes="Bold"
+                    FontSize="15" />
+
+            <!-- Back to Home -->
+            <Button Text="Back to Home"
+                    Command="{Binding BackToHomeCommand}"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12"
+                    HeightRequest="52"
+                    FontAttributes="Bold"
+                    FontSize="16" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

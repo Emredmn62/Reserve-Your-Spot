@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Reserve_Your_Spot.Models"
+             xmlns:controls="clr-namespace:Reserve_Your_Spot.Controls"
+             x:Class="Reserve_Your_Spot.Views.Customer.ServiceSelectionPage"
+             Title="Choose a Service"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView Grid.Row="0" Padding="24,16,24,0">
+            <VerticalStackLayout Spacing="0">
+                <Label Text="Choose a Service"
+                       FontSize="22" FontAttributes="Bold"
+                       TextColor="{StaticResource ColorWhite}"
+                       Margin="0,0,0,4" />
+                <Label Text="{Binding Business.Name}"
+                       FontSize="14" TextColor="{StaticResource ColorGold}"
+                       Margin="0,0,0,20" />
+
+                <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource ColorGold}" />
+
+                <CollectionView ItemsSource="{Binding Services}"
+                                SelectionMode="None"
+                                x:Name="ServicesCollection">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Service">
+                            <controls:ServiceCard Service="{Binding .}"
+                                                  ServiceTapped="OnServiceTapped"
+                                                  Margin="0,0,0,4" />
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No services available." TextColor="{StaticResource ColorGrey}" FontSize="14" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Continue button -->
+        <Border Grid.Row="1" BackgroundColor="{StaticResource ColorBlack}"
+                Stroke="{StaticResource ColorSurface2}" StrokeShape="RoundRectangle 0"
+                Padding="24,12">
+            <Button Text="Continue →"
+                    Command="{Binding ContinueCommand}"
+                    IsEnabled="{Binding CanContinue}"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12" HeightRequest="52"
+                    FontAttributes="Bold" FontSize="16" />
+        </Border>
+    </Grid>
+</ContentPage>

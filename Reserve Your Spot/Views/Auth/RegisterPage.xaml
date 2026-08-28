@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Reserve_Your_Spot.Views.Auth.RegisterPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="32,48,32,32" Spacing="0">
+
+            <Label Text="Create Account"
+                   FontSize="28" FontAttributes="Bold"
+                   TextColor="{StaticResource ColorWhite}"
+                   Margin="0,0,0,8" />
+            <Label Text="Join thousands booking local pros"
+                   FontSize="15" TextColor="{StaticResource ColorGrey}"
+                   Margin="0,0,0,32" />
+
+            <!-- Error -->
+            <Border BackgroundColor="#3D1515"
+                    Stroke="{StaticResource ColorError}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="12"
+                    IsVisible="{Binding HasError}"
+                    Margin="0,0,0,16">
+                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ColorError}" FontSize="14" />
+            </Border>
+
+            <!-- Full Name -->
+            <Label Text="Full Name" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
+                <Entry Text="{Binding FullName}" Placeholder="Emma Johnson"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Email -->
+            <Label Text="Email" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
+                <Entry Text="{Binding Email}" Placeholder="you@example.com" Keyboard="Email"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Phone -->
+            <Label Text="Phone Number" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
+                <Entry Text="{Binding Phone}" Placeholder="+44 7700 900000" Keyboard="Telephone"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Password -->
+            <Label Text="Password" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
+                <Entry Text="{Binding Password}" Placeholder="Min. 6 characters"
+                       IsPassword="{Binding IsPasswordVisible, Converter={StaticResource InverseBool}}"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Confirm Password -->
+            <Label Text="Confirm Password" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,24">
+                <Entry Text="{Binding ConfirmPassword}" Placeholder="Repeat password"
+                       IsPassword="True"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+
+            <!-- Business owner toggle -->
+            <Border BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="14"
+                    Margin="0,0,0,28">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="I'm a business owner" FontSize="15" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorWhite}" />
+                        <Label Text="List your business and accept bookings"
+                               FontSize="12" TextColor="{StaticResource ColorGrey}" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1"
+                            IsToggled="{Binding IsBusinessOwner}"
+                            OnColor="{StaticResource ColorGold}"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
+
+            <!-- Create Account button -->
+            <Button Text="Create Account"
+                    Command="{Binding RegisterCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12" HeightRequest="52"
+                    FontAttributes="Bold" FontSize="16" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource ColorGold}" Margin="0,8,0,0" />
+
+            <!-- Sign in link -->
+            <Label HorizontalOptions="Center" Margin="0,20,0,0">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="Already have an account? " TextColor="{StaticResource ColorGrey}" FontSize="14" />
+                        <Span Text="Sign In" TextColor="{StaticResource ColorGold}" FontSize="14" FontAttributes="Bold">
+                            <Span.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding NavigateToLoginCommand}" />
+                            </Span.GestureRecognizers>
+                        </Span>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

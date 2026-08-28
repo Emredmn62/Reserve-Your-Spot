@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Reserve_Your_Spot.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:onboarding="clr-namespace:Reserve_Your_Spot.Views.Onboarding"
+    xmlns:customer="clr-namespace:Reserve_Your_Spot.Views.Customer"
+    xmlns:business="clr-namespace:Reserve_Your_Spot.Views.BusinessPortal"
+    FlyoutBehavior="Disabled"
+    Title="Reserve Your Spot">
+
+    <!-- Start screen -->
+    <ShellContent
+        Route="onboarding"
+        ContentTemplate="{DataTemplate onboarding:OnboardingPage}" />
+
+    <!-- Customer area -->
+    <TabBar Route="customer">
+        <ShellContent Title="Home"     Route="home"       ContentTemplate="{DataTemplate customer:HomePage}" />
+        <ShellContent Title="Search"   Route="search"     ContentTemplate="{DataTemplate customer:SearchPage}" />
+        <ShellContent Title="Bookings" Route="mybookings" ContentTemplate="{DataTemplate customer:MyBookingsPage}" />
+        <ShellContent Title="Saved"    Route="favourites" ContentTemplate="{DataTemplate customer:FavouritesPage}" />
+        <ShellContent Title="Profile"  Route="profile"    ContentTemplate="{DataTemplate customer:CustomerProfilePage}" />
+    </TabBar>
+
+    <!-- Business area -->
+    <TabBar Route="business">
+        <ShellContent Title="Dashboard" Route="dashboard" ContentTemplate="{DataTemplate business:DashboardPage}" />
+        <ShellContent Title="Calendar"  Route="calendar"  ContentTemplate="{DataTemplate business:CalendarPage}" />
+    </TabBar>
+
+</Shell>
