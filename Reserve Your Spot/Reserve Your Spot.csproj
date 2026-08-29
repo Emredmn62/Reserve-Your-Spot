@@ -14,11 +14,18 @@
 
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 
-		<ApplicationTitle>BookLocal</ApplicationTitle>
-		<ApplicationId>com.companyname.booklocal</ApplicationId>
-		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+		<ApplicationTitle>Reserve Your Spot</ApplicationTitle>
+		<ApplicationId>com.emredmn62.reserveyourspot</ApplicationId>
+		<ApplicationDisplayVersion>1.0.0</ApplicationDisplayVersion>
 		<ApplicationVersion>1</ApplicationVersion>
 		<WindowsPackageType>None</WindowsPackageType>
+
+		<!-- Google Play requires targeting a recent Android API. net10.0-android maps to API 35. -->
+		<AndroidPackageFormats Condition="'$(Configuration)' == 'Release'">aab;apk</AndroidPackageFormats>
+
+		<!-- Release signing: values come from signing/signing.props (git-ignored, created by keytool).
+		     If that file is absent the Release build stays debug-signed so CI / other machines still build. -->
+		<AndroidKeyStore Condition="'$(Configuration)' == 'Release' And Exists('$(MSBuildProjectDirectory)\signing\signing.props')">true</AndroidKeyStore>
 
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
@@ -28,7 +35,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#C9A84C" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#0A0A0A" />
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#0A0A0A" BaseSize="128,128" />
 		<MauiImage Include="Resources\Images\*" />
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
@@ -41,5 +48,8 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
 	</ItemGroup>
+
+	<!-- Local release-signing secrets; not committed. See signing/README.txt -->
+	<Import Project="signing\signing.props" Condition="Exists('signing\signing.props')" />
 
 </Project>

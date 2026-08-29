@@ -35,6 +35,10 @@ out/
 !.env.example
 *.local
 
+# ---- Release signing (keep OUT of git; back up separately) ----
+signing/
+**/signing/
+
 # ---- OS / editor ----
 .DS_Store
 Thumbs.db

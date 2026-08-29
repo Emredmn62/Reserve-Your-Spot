@@ -1,197 +1,79 @@
-# BookLocal — Local Business Booking Platform
+# Reserve Your Spot
 
-A full-stack booking platform for local businesses: barbers, salons, nail shops, PTs, tutors, mechanics and more.
+Find and book local businesses — barbers, salons, nail techs, personal trainers,
+massage therapists and more. Pick a service, choose a time, pay a small deposit,
+done.
 
-## Renaming the App
+> Formerly "BookLocal". The `booklocal-*` folders keep the old name for now.
 
-The app name is stored in **one place only**:
-- **Mobile:** `booklocal-mobile/constants/AppConstants.ts` → `APP_NAME`
-- **Web admin:** `booklocal-web/app/layout.tsx` → `APP_NAME`
+## Try it
 
-Change these two constants and the name updates everywhere.
+**Android:** download and install the latest demo APK —
+[**Releases**](../../releases/latest). Sign in with any email + password
+(use an email starting `biz@` to open the business dashboard). Runs on
+sample data, no account or internet needed.
 
----
+iPhone can't install an APK — there's no free way around that.
 
-## Structure
+## What's in this repo
 
-```
-Reserve Your Spot/
-├── booklocal-mobile/     ← Expo React Native app (iOS + Android)
-├── booklocal-web/        ← Next.js admin panel (Vercel)
-└── README.md
-```
+| Folder | Stack | Status |
+|--------|-------|--------|
+| `Reserve Your Spot/` | **.NET MAUI (C#)** — the main app | Runs on Windows + Android. Release build is Play-Store-signed. |
+| `booklocal-mobile/` | Expo / React Native | Scaffolded; needs `npm install` + `.env` |
+| `booklocal-web/` | Next.js 15 + Tailwind — admin panel | Scaffolded; needs `npm install` + `.env.local` |
 
----
-
-## Quick Start
-
-### 1. Set up Supabase
-
-1. Create a project at [supabase.com](https://supabase.com)
-2. Open the SQL editor and run the entire SQL schema from `booklocal-mobile/services/supabase.ts` (inside the comment block)
-3. Create Storage buckets: `business-logos`, `business-covers`, `business-gallery`, `staff-photos`, `user-avatars` — all set to **public**
-4. Copy your **Project URL** and **anon key**
-
-### 2. Set up Stripe
-
-1. Create a Stripe account at [stripe.com](https://stripe.com)
-2. Get your **publishable key** and **secret key**
-3. Deploy the Edge Function at `supabase/functions/create-payment-intent/index.ts`:
-   ```bash
-   supabase functions deploy create-payment-intent
-   supabase secrets set STRIPE_SECRET_KEY=sk_live_...
-   ```
-
-### 3. Mobile App Setup
+## Run the MAUI app
 
 ```bash
-cd booklocal-mobile
-npm install
+# Windows desktop
+dotnet build "Reserve Your Spot/Reserve Your Spot.csproj" -f net10.0-windows10.0.19041.0 -c Debug
+# then run bin/Debug/net10.0-windows10.0.19041.0/win-x64/Reserve Your Spot.exe
 
-# Create .env file:
-echo "EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co" > .env
-echo "EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key" >> .env
-echo "EXPO_PUBLIC_STRIPE_KEY=pk_live_your_key" >> .env
-echo "EXPO_PUBLIC_MAPS_KEY=your-google-maps-key" >> .env
-
-# Run on Android
-npm run android
-
-# Run on iOS (Mac only)
-npm run ios
+# Android (debug APK on a connected device / emulator)
+dotnet build "Reserve Your Spot/Reserve Your Spot.csproj" -f net10.0-android -c Debug -t:Run
 ```
 
-### 4. Web Admin Setup
+Requires the .NET 10 SDK and the `maui` workloads (`dotnet workload install maui`).
+
+### Mock vs real backend
+
+The app ships wired to **mock services** (`Reserve Your Spot/Services/MockData.cs`)
+so it runs with zero setup. To go live:
+
+1. Put your Supabase + Stripe keys in `Reserve Your Spot/Constants/AppConstants.cs`
+2. In `Reserve Your Spot/MauiProgram.cs` → `RegisterServices`, swap the four
+   `Mock*` registrations for `AuthService` / `BusinessService` / `BookingService` / `PaymentService`
+
+## Publishing to Google Play
+
+See [**PLAYSTORE.md**](PLAYSTORE.md) — full step-by-step. In short:
 
 ```bash
-cd booklocal-web
-npm install
-
-# Create .env.local file:
-echo "NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co" > .env.local
-echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key" >> .env.local
-
-# Run dev server
-npm run dev
-# Open http://localhost:3000/admin
+dotnet publish "Reserve Your Spot/Reserve Your Spot.csproj" -f net10.0-android -c Release
+# -> bin/Release/net10.0-android/com.emredmn62.reserveyourspot-Signed.aab
 ```
 
----
+The release build is signed with an upload key in `Reserve Your Spot/signing/`
+(git-ignored — **back it up**). Store-listing copy is in
+[STORE_LISTING.md](STORE_LISTING.md); privacy policy in [PRIVACY.md](PRIVACY.md).
 
-## Tech Stack
+| | |
+|--|--|
+| Application ID | `com.emredmn62.reserveyourspot` |
+| Version | 1.0.0 (code 1) |
+| Min Android | 5.0 / API 21 |
 
-| Layer | Technology |
-|-------|-----------|
-| Mobile | Expo + React Native + Expo Router |
-| State | Zustand |
-| Web admin | Next.js 15 + Tailwind CSS |
-| Database | Supabase (PostgreSQL) |
-| Auth | Supabase Auth |
-| Storage | Supabase Storage |
-| Payments | Stripe (deposit model) |
-| Maps | Google Maps |
-| Hosting (web) | Vercel |
-| Push notifications | Expo Notifications |
+## The other two apps (BookLocal)
 
----
+Original plan: Expo mobile app + Next.js admin, both on Supabase + Stripe.
 
-## Key Features
+- Full SQL schema (tables + RLS): comment block in `booklocal-mobile/services/supabase.ts`
+- Mobile env: `EXPO_PUBLIC_SUPABASE_URL`, `EXPO_PUBLIC_SUPABASE_ANON_KEY`, `EXPO_PUBLIC_STRIPE_KEY`, `EXPO_PUBLIC_MAPS_KEY`
+- Web env: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- App name for those two: `booklocal-mobile/constants/AppConstants.ts` and `booklocal-web/app/layout.tsx`
 
-### Customer
-- Discover local businesses by location & category
-- Full business profiles with gallery, staff, reviews
-- 8-step booking flow: Business → Service → Staff → Date → Time → Details → Deposit → Confirmation
-- Deposit payments via Stripe (rest paid in person)
-- Saved businesses (favourites)
-- Booking history (upcoming / past / cancelled)
-- Loyalty cards per business
-- Smart rebook reminders
+## Tech
 
-### Business
-- Self-service profile creation
-- Services management (add / edit / delete / toggle active)
-- Staff management with working hours
-- Live booking calendar
-- Manual booking creation
-- Analytics dashboard (revenue, no-shows, ratings)
-- Last-minute slot flagging
-- QR code sharing (`booklocal.app/{slug}`)
-- Custom branding (logo, cover, brand colour)
-
-### Admin Panel
-- Approve / suspend businesses
-- View all bookings and payments
-- Platform revenue tracking (10% deposit fee)
-- Analytics overview
-
-### Monetisation
-- **Freemium:** Free plan (20 bookings/month), Pro (£19.99/mo), Premium (£49.99/mo)
-- **Deposit fee:** App keeps 10% of every deposit
-- **Featured listings:** Businesses pay to appear higher in search
-- **Business Boost:** Temporary promotion upgrades
-
----
-
-## Environment Variables
-
-### Mobile (`booklocal-mobile/.env`)
-```
-EXPO_PUBLIC_SUPABASE_URL=
-EXPO_PUBLIC_SUPABASE_ANON_KEY=
-EXPO_PUBLIC_STRIPE_KEY=
-EXPO_PUBLIC_MAPS_KEY=
-```
-
-### Web (`booklocal-web/.env.local`)
-```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=   ← for admin operations
-```
-
----
-
-## Deployment
-
-### Mobile — Expo EAS
-```bash
-cd booklocal-mobile
-npx eas build --platform all
-npx eas submit
-```
-
-### Web Admin — Vercel
-```bash
-cd booklocal-web
-npx vercel --prod
-```
-
----
-
-## Database Schema
-
-All tables with RLS policies are defined in `booklocal-mobile/services/supabase.ts`.
-
-Tables: `users`, `businesses`, `categories`, `services`, `staff`, `bookings`, `payments`, `reviews`, `favourites`, `loyalty_cards`, `notifications`, `admin_users`
-
----
-
-## Folder Map (Mobile)
-
-```
-booklocal-mobile/
-├── app/
-│   ├── _layout.tsx           Root layout, auth gate
-│   ├── index.tsx             Redirect based on auth state
-│   ├── onboarding.tsx        3-slide onboarding
-│   ├── (auth)/               Login, Register, Business Setup
-│   ├── (customer)/           Home, Search, Bookings, Favourites, Profile
-│   ├── (business)/           Dashboard, Calendar, Services, Staff, Analytics
-│   ├── business/[slug].tsx   Public business profile
-│   └── booking/              Service → Staff → DateTime → Payment → Confirmation
-├── constants/AppConstants.ts  ← All config + colours + APP_NAME
-├── types/index.ts             All TypeScript models
-├── services/                  Supabase, Auth, Business, Booking, Payment
-├── store/                     Zustand: auth + booking flow
-└── components/ui/             BusinessCard, ServiceCard, BookingCard, GoldButton, StarRating
-```
+.NET MAUI · CommunityToolkit.Mvvm · Supabase (Postgres + Auth + Storage) ·
+Stripe (deposit model, 10% platform fee) · Expo · Next.js 15 · Tailwind

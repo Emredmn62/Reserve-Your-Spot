@@ -2,7 +2,7 @@ namespace Reserve_Your_Spot.Constants;
 
 public static class AppConstants
 {
-    public const string AppName = "BookLocal";
+    public const string AppName = "Reserve Your Spot";
     public const string SupabaseUrl = "YOUR_SUPABASE_URL";
     public const string SupabaseAnonKey = "YOUR_SUPABASE_ANON_KEY";
     public const string StripePublishableKey = "YOUR_STRIPE_PUBLISHABLE_KEY";
