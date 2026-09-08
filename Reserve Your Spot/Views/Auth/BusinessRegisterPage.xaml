@@ -60,11 +60,22 @@
             <!-- Phone -->
             <Label Text="Phone Number *" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
             <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
-                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,32">
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,16">
                 <Entry x:Name="PhoneEntry" Placeholder="+44 7700 900000" Keyboard="Telephone"
                        BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
                        PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
             </Border>
+
+            <!-- Invite code -->
+            <Label Text="Invite Code *" TextColor="{StaticResource ColorGrey}" FontSize="13" Margin="0,0,0,6" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorGold}"
+                    StrokeShape="RoundRectangle 12" Padding="0" Margin="0,0,0,6">
+                <Entry x:Name="ReferralEntry" Placeholder="e.g. FOUNDER-001"
+                       BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                       PlaceholderColor="{StaticResource ColorGrey}" Margin="12,0" />
+            </Border>
+            <Label Text="Reserve Your Spot is invite-only right now. One code per business."
+                   TextColor="{StaticResource ColorGrey}" FontSize="11" Margin="2,0,0,32" />
 
             <!-- Complete Setup button -->
             <Button x:Name="CompleteBtn"

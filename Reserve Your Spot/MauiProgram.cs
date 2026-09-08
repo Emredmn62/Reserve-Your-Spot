@@ -44,6 +44,7 @@ namespace Reserve_Your_Spot
             services.AddSingleton<IBusinessService, MockBusinessService>();
             services.AddSingleton<IBookingService, MockBookingService>();
             services.AddSingleton<IPaymentService, MockPaymentService>();
+            services.AddSingleton<IReferralService, MockReferralService>();
         }
 
         private static void RegisterViewModels(IServiceCollection services)

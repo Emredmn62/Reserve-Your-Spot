@@ -7,10 +7,19 @@ public static class AppConstants
     public const string SupabaseAnonKey = "YOUR_SUPABASE_ANON_KEY";
     public const string StripePublishableKey = "YOUR_STRIPE_PUBLISHABLE_KEY";
     public const string GoogleMapsKey = "YOUR_GOOGLE_MAPS_KEY";
-    public const decimal PlatformFeePercent = 0.10m;
-    public const decimal ProMonthlyPrice = 19.99m;
-    public const decimal PremiumMonthlyPrice = 49.99m;
-    public const int FreeBookingsLimit = 20;
+    // ---- Monetisation ----
+    // Single plan. No cut of bookings — the subscription is the whole business model.
+    public const decimal SubscriptionMonthlyPrice = 10.00m;   // £/month
+    public const int FreeTrialMonths = 3;                     // first N months free
+    public const decimal DepositPlatformFeePercent = 0.00m;   // we do NOT skim deposits
+    public const string SubscriptionCurrency = "gbp";
+
+    // Set to your Stripe Billing Price ID (price_...) once Stripe is configured.
+    public const string StripeSubscriptionPriceId = "YOUR_STRIPE_PRICE_ID";
+
+    // Kept for backwards-compat with existing code paths.
+    public const decimal PlatformFeePercent = DepositPlatformFeePercent;
+    public const decimal ProMonthlyPrice = SubscriptionMonthlyPrice;
 
     // Route names
     public const string RouteOnboarding = "onboarding";
