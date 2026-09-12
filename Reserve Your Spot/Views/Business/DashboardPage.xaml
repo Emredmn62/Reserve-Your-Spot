@@ -90,12 +90,21 @@
 
                 <!-- Quick actions -->
                 <HorizontalStackLayout Spacing="12">
-                    <Button Text="+ Manual Booking"
-                            Command="{Binding CreateManualBookingCommand}"
+                    <Button Text="📸 New Post"
+                            Command="{Binding NewPostCommand}"
                             BackgroundColor="{StaticResource ColorGold}"
                             TextColor="{StaticResource ColorBlack}"
                             CornerRadius="10" HeightRequest="44"
                             FontAttributes="Bold" FontSize="14"
+                            Padding="16,0" />
+                    <Button Text="+ Manual Booking"
+                            Command="{Binding CreateManualBookingCommand}"
+                            BackgroundColor="{StaticResource ColorSurface}"
+                            TextColor="{StaticResource ColorWhite}"
+                            BorderColor="{StaticResource ColorSurface2}"
+                            BorderWidth="1"
+                            CornerRadius="10" HeightRequest="44"
+                            FontSize="14"
                             Padding="16,0" />
                     <Button Text="Block Time"
                             Command="{Binding BlockTimeCommand}"

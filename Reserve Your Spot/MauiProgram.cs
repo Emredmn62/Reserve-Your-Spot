@@ -45,6 +45,7 @@ namespace Reserve_Your_Spot
             services.AddSingleton<IBookingService, MockBookingService>();
             services.AddSingleton<IPaymentService, MockPaymentService>();
             services.AddSingleton<IReferralService, MockReferralService>();
+            services.AddSingleton<IPostService, MockPostService>();
         }
 
         private static void RegisterViewModels(IServiceCollection services)
@@ -71,6 +72,7 @@ namespace Reserve_Your_Spot
             services.AddTransient<ManageServicesViewModel>();
             services.AddTransient<ManageStaffViewModel>();
             services.AddTransient<BusinessProfileEditViewModel>();
+            services.AddTransient<CreatePostViewModel>();
         }
 
         private static void RegisterPages(IServiceCollection services)
@@ -94,6 +96,7 @@ namespace Reserve_Your_Spot
 
             services.AddTransient<DashboardPage>();
             services.AddTransient<CalendarPage>();
+            services.AddTransient<CreatePostPage>();
         }
     }
 }

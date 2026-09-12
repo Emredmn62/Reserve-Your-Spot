@@ -68,6 +68,10 @@ public partial class DashboardViewModel : BaseViewModel
         => await Shell.Current.DisplayAlert("Block Time", "Block time UI coming soon.", "OK");
 
     [RelayCommand]
+    private async Task NewPostAsync()
+        => await Shell.Current.GoToAsync(Constants.AppConstants.RouteCreatePost);
+
+    [RelayCommand]
     private async Task ConfirmBookingAsync(Booking booking)
     {
         await _bookingService.ConfirmBookingAsync(booking.Id);

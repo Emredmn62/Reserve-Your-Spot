@@ -93,53 +93,83 @@
                     </CollectionView.ItemTemplate>
                 </CollectionView>
 
-                <!-- Nearby -->
-                <Grid ColumnDefinitions="*,Auto" Padding="24,20,24,12">
-                    <Label Grid.Column="0" Text="Nearby" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource ColorWhite}" />
-                    <Label Grid.Column="1" Text="See all" FontSize="13" TextColor="{StaticResource ColorGold}">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding SearchCommand}" />
-                        </Label.GestureRecognizers>
-                    </Label>
-                </Grid>
-
-                <CollectionView ItemsSource="{Binding NearbyBusinesses}"
-                                HeightRequest="230"
+                <!-- Feed -->
+                <CollectionView ItemsSource="{Binding FeedPosts}"
+                                Margin="0,4,0,0"
                                 SelectionMode="None">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="16" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.Header><BoxView WidthRequest="24" Color="Transparent"/></CollectionView.Header>
-                    <CollectionView.Footer><BoxView WidthRequest="24" Color="Transparent"/></CollectionView.Footer>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Business">
-                            <controls:BusinessCard Business="{Binding .}"
-                                                   WidthRequest="200"
-                                                   BusinessTapped="OnBusinessTapped" />
+                        <DataTemplate x:DataType="models:Post">
+                            <Border BackgroundColor="{StaticResource ColorSurface}"
+                                    Stroke="{StaticResource ColorSurface2}"
+                                    StrokeShape="RoundRectangle 0"
+                                    Margin="0,0,0,10"
+                                    Padding="0">
+
+                                <VerticalStackLayout>
+                                    <!-- Business header -->
+                                    <Grid ColumnDefinitions="44,*" Padding="14,12" ColumnSpacing="10">
+                                        <Border Grid.Column="0"
+                                                BackgroundColor="{StaticResource ColorGold}"
+                                                StrokeShape="Ellipse" Stroke="Transparent"
+                                                HeightRequest="44" WidthRequest="44">
+                                            <Label Text="{Binding Business.Name, Converter={StaticResource InitialsFmt}}"
+                                                   FontSize="15" FontAttributes="Bold"
+                                                   TextColor="{StaticResource ColorBlack}"
+                                                   HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                            <Label Text="{Binding Business.Name}" FontSize="14" FontAttributes="Bold"
+                                                   TextColor="{StaticResource ColorWhite}" />
+                                            <Label FontSize="11" TextColor="{StaticResource ColorGrey}">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{Binding Business.Category.Name}" />
+                                                        <Span Text="  •  " />
+                                                        <Span Text="{Binding TimeAgoDisplay}" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                        </VerticalStackLayout>
+                                        <Grid.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=NavigateToPostBusinessCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Grid.GestureRecognizers>
+                                    </Grid>
+
+                                    <!-- Photo -->
+                                    <Image Source="{Binding ImageUrl}"
+                                           Aspect="AspectFill"
+                                           HeightRequest="360"
+                                           BackgroundColor="{StaticResource ColorSurface2}">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=NavigateToPostBusinessCommand}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Image.GestureRecognizers>
+                                    </Image>
+
+                                    <!-- Caption -->
+                                    <Label Padding="14,10" LineBreakMode="WordWrap" FontSize="13" TextColor="{StaticResource ColorWhite}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Business.Name}" FontAttributes="Bold" />
+                                                <Span Text="  " />
+                                                <Span Text="{Binding Caption}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                     <CollectionView.EmptyView>
-                        <Label Text="No businesses nearby yet" TextColor="{StaticResource ColorGrey}"
-                               HorizontalOptions="Center" Margin="24" />
-                    </CollectionView.EmptyView>
-                </CollectionView>
-
-                <!-- Featured -->
-                <Grid ColumnDefinitions="*,Auto" Padding="24,20,24,12">
-                    <Label Grid.Column="0" Text="Featured ⭐" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource ColorWhite}" />
-                </Grid>
-
-                <CollectionView ItemsSource="{Binding FeaturedBusinesses}"
-                                Margin="24,0"
-                                SelectionMode="None">
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Business">
-                            <controls:BusinessCard Business="{Binding .}" BusinessTapped="OnBusinessTapped" />
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <Label Text="No featured businesses yet" TextColor="{StaticResource ColorGrey}"
-                               HorizontalOptions="Center" Margin="24" />
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="8" Margin="24,60,24,0">
+                            <Label Text="📸" FontSize="40" HorizontalOptions="Center" />
+                            <Label Text="No posts yet" FontSize="16" FontAttributes="Bold"
+                                   TextColor="{StaticResource ColorWhite}" HorizontalOptions="Center" />
+                            <Label Text="Be the first business to post here."
+                                   FontSize="13" TextColor="{StaticResource ColorGrey}"
+                                   HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
                     </CollectionView.EmptyView>
                 </CollectionView>
 

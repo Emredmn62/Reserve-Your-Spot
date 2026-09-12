@@ -36,6 +36,7 @@ public static class MockStore
     public static readonly List<LoyaltyCard> LoyaltyCards = new();
     public static readonly List<Booking> Bookings = new();
     public static readonly List<Payment> Payments = new();
+    public static readonly List<Post> Posts = new();
 
     // Invite codes you hand out. One code = one business.
     // Replace/extend with your real codes (in production these live in the DB).
@@ -259,6 +260,37 @@ public class MockPaymentService : IPaymentService
 
     public Task<List<Payment>> GetPaymentsForBookingAsync(string bookingId)
         => Task.FromResult(MockStore.Payments.Where(p => p.BookingId == bookingId).ToList());
+}
+
+public class MockPostService : IPostService
+{
+    public Task<List<Post>> GetFeedAsync()
+    {
+        var feed = MockStore.Posts
+            .Where(p => p.Business?.IsApproved == true)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToList();
+        return Task.FromResult(feed);
+    }
+
+    public Task<List<Post>> GetPostsForBusinessAsync(string businessId)
+        => Task.FromResult(MockStore.Posts.Where(p => p.BusinessId == businessId)
+                                          .OrderByDescending(p => p.CreatedAt).ToList());
+
+    public Task<Post?> CreatePostAsync(Post post)
+    {
+        post.Id = Guid.NewGuid().ToString();
+        post.CreatedAt = DateTime.Now;
+        post.Business ??= MockStore.Businesses.FirstOrDefault(b => b.Id == post.BusinessId);
+        MockStore.Posts.Insert(0, post);
+        return Task.FromResult<Post?>(post);
+    }
+
+    public Task DeletePostAsync(string postId)
+    {
+        MockStore.Posts.RemoveAll(p => p.Id == postId);
+        return Task.CompletedTask;
+    }
 }
 
 public class MockReferralService : IReferralService

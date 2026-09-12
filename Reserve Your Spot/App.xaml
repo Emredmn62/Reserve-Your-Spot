@@ -11,6 +11,7 @@
             <conv:BoolToEyeIconConverter x:Key="BoolToEyeIcon" />
             <conv:PriceFormatter x:Key="PriceFmt" />
             <conv:DateFormatter x:Key="DateFmt" />
+            <conv:InitialsConverter x:Key="InitialsFmt" />
 
             <!-- ===== COLOURS ===== -->
             <Color x:Key="ColorBlack">#0A0A0A</Color>

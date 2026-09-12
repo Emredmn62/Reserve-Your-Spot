@@ -1,0 +1,19 @@
+using System.Globalization;
+
+namespace Reserve_Your_Spot.Converters;
+
+/// <summary>"Fade Masters Barbershop" -> "FM"</summary>
+public class InitialsConverter : IValueConverter
+{
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is not string name || string.IsNullOrWhiteSpace(name)) return "?";
+        var initials = string.Join("", name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                            .Take(2)
+                                            .Select(w => char.ToUpper(w[0])));
+        return initials.Length > 0 ? initials : "?";
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        => throw new NotImplementedException();
+}

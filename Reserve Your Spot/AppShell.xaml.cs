@@ -1,4 +1,5 @@
 using Reserve_Your_Spot.Views.Auth;
+using Reserve_Your_Spot.Views.BusinessPortal;
 using Reserve_Your_Spot.Views.Customer;
 
 namespace Reserve_Your_Spot
@@ -23,6 +24,7 @@ namespace Reserve_Your_Spot
             Routing.RegisterRoute("datetimeselection", typeof(DateTimeSelectionPage));
             Routing.RegisterRoute("payment", typeof(PaymentPage));
             Routing.RegisterRoute("bookingconfirmation", typeof(BookingConfirmationPage));
+            Routing.RegisterRoute("createpost", typeof(CreatePostPage));
         }
     }
 }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Reserve_Your_Spot.Views.BusinessPortal.CreatePostPage"
+             Title="New Post"
+             BackgroundColor="{StaticResource ColorBlack}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24,20" Spacing="16">
+
+            <!-- Photo picker / preview -->
+            <Border BackgroundColor="{StaticResource ColorSurface}"
+                    Stroke="{StaticResource ColorGold}"
+                    StrokeShape="RoundRectangle 14"
+                    HeightRequest="320"
+                    Padding="0">
+                <Grid>
+                    <Image Source="{Binding ImagePath}" Aspect="AspectFill"
+                           IsVisible="{Binding CanPost}" />
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8"
+                                         IsVisible="{Binding CanPost, Converter={StaticResource InverseBool}}">
+                        <Label Text="📷" FontSize="40" HorizontalOptions="Center" />
+                        <Label Text="Tap to choose a photo" TextColor="{StaticResource ColorGrey}"
+                               FontSize="14" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding PickPhotoCommand}" />
+                    </Grid.GestureRecognizers>
+                </Grid>
+            </Border>
+
+            <Button Text="Choose Photo"
+                    Command="{Binding PickPhotoCommand}"
+                    BackgroundColor="{StaticResource ColorSurface}"
+                    TextColor="{StaticResource ColorWhite}"
+                    BorderColor="{StaticResource ColorSurface2}"
+                    BorderWidth="1"
+                    CornerRadius="10" HeightRequest="46" FontSize="14" />
+
+            <!-- Caption -->
+            <Label Text="Caption" TextColor="{StaticResource ColorGrey}" FontSize="13" />
+            <Border BackgroundColor="{StaticResource ColorSurface}" Stroke="{StaticResource ColorSurface2}"
+                    StrokeShape="RoundRectangle 12" Padding="12">
+                <Editor Text="{Binding Caption}" Placeholder="Fresh fades all week — walk-ins welcome!"
+                        HeightRequest="90"
+                        BackgroundColor="Transparent" TextColor="{StaticResource ColorWhite}"
+                        PlaceholderColor="{StaticResource ColorGrey}" />
+            </Border>
+
+            <!-- Error -->
+            <Border BackgroundColor="#3D1515"
+                    Stroke="{StaticResource ColorError}"
+                    StrokeShape="RoundRectangle 8"
+                    Padding="12"
+                    IsVisible="{Binding HasError}">
+                <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ColorError}" FontSize="14" />
+            </Border>
+
+            <Button Text="Post"
+                    Command="{Binding PostCommand}"
+                    IsEnabled="{Binding CanPost}"
+                    BackgroundColor="{StaticResource ColorGold}"
+                    TextColor="{StaticResource ColorBlack}"
+                    CornerRadius="12" HeightRequest="52"
+                    FontAttributes="Bold" FontSize="16" />
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="{StaticResource ColorGold}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

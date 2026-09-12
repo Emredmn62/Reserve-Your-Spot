@@ -11,20 +11,23 @@ public partial class HomeViewModel : BaseViewModel
 {
     private readonly IBusinessService _businessService;
     private readonly IAuthService _authService;
+    private readonly IPostService _postService;
 
     [ObservableProperty] private string _greetingText = "Hello 👋";
     [ObservableProperty] private string _userInitials = "U";
     [ObservableProperty] private Category? _selectedCategory;
+    [ObservableProperty] private bool _hasPosts;
 
     public List<Category> Categories { get; } = Category.Defaults;
-    public ObservableCollection<Business> NearbyBusinesses { get; } = new();
-    public ObservableCollection<Business> FeaturedBusinesses { get; } = new();
-    public ObservableCollection<TimeSlot> LastMinuteSlots { get; } = new();
 
-    public HomeViewModel(IBusinessService businessService, IAuthService authService)
+    /// <summary>The Home feed: newest posts from approved businesses, Instagram-style.</summary>
+    public ObservableCollection<Post> FeedPosts { get; } = new();
+
+    public HomeViewModel(IBusinessService businessService, IAuthService authService, IPostService postService)
     {
         _businessService = businessService;
         _authService = authService;
+        _postService = postService;
         Title = AppConstants.AppName;
         SetGreeting();
     }
@@ -54,13 +57,10 @@ public partial class HomeViewModel : BaseViewModel
                 UserInitials = string.Join("", user.FullName.Split(' ').Take(2).Select(n => n.FirstOrDefault()));
             }
 
-            var nearby = await _businessService.GetNearbyBusinessesAsync(51.5, -0.12, 10);
-            NearbyBusinesses.Clear();
-            foreach (var b in nearby.Take(10)) NearbyBusinesses.Add(b);
-
-            var featured = await _businessService.GetFeaturedBusinessesAsync();
-            FeaturedBusinesses.Clear();
-            foreach (var b in featured) FeaturedBusinesses.Add(b);
+            var feed = await _postService.GetFeedAsync();
+            FeedPosts.Clear();
+            foreach (var post in feed) FeedPosts.Add(post);
+            HasPosts = FeedPosts.Count > 0;
         }
         catch (Exception ex) { SetError(ex.Message); }
         finally { IsBusy = false; }
@@ -71,6 +71,13 @@ public partial class HomeViewModel : BaseViewModel
     {
         if (business == null) return;
         await Shell.Current.GoToAsync($"{AppConstants.RouteBusinessProfile}?businessId={business.Id}");
+    }
+
+    [RelayCommand]
+    private async Task NavigateToPostBusinessAsync(Post post)
+    {
+        if (post?.Business == null) return;
+        await Shell.Current.GoToAsync($"{AppConstants.RouteBusinessProfile}?businessId={post.Business.Id}");
     }
 
     [RelayCommand]
