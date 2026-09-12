@@ -46,8 +46,14 @@ public partial class OnboardingViewModel : BaseViewModel
     [RelayCommand]
     private void Skip() => NavigateToLogin();
 
+    // "Get Started" drops you straight into the app as a guest — browsing is
+    // open to everyone. Signing in only happens when you try to do something
+    // that needs an account (book, save a favourite, etc).
     [RelayCommand]
-    private void GetStarted() => NavigateToLogin();
+    private void GetStarted()
+    {
+        Shell.Current.GoToAsync(AppConstants.RouteHome);
+    }
 
     private static void NavigateToLogin()
     {

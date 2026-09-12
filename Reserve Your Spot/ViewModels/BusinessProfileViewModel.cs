@@ -59,6 +59,7 @@ public partial class BusinessProfileViewModel : BaseViewModel
     [RelayCommand]
     private async Task ToggleFavouriteAsync()
     {
+        if (!await RequireLoginAsync()) return;
         var uid = _authService.CurrentUserId;
         if (uid == null || BusinessId == null) return;
         IsFavourite = await _businessService.ToggleFavouriteAsync(uid, BusinessId);
@@ -68,7 +69,16 @@ public partial class BusinessProfileViewModel : BaseViewModel
     private async Task BookNowAsync()
     {
         if (Business == null) return;
+        if (!await RequireLoginAsync()) return;
         await Shell.Current.GoToAsync($"{AppConstants.RouteServiceSelection}?businessId={Business.Id}");
+    }
+
+    /// <summary>Browsing needs no account; this is the "moment you try to do something" gate.</summary>
+    private async Task<bool> RequireLoginAsync()
+    {
+        if (_authService.IsLoggedIn) return true;
+        await Shell.Current.GoToAsync(AppConstants.RouteLogin);
+        return false;
     }
 
     [RelayCommand]

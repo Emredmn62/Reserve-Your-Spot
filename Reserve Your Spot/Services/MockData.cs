@@ -173,14 +173,18 @@ public static class MockStore
 public class MockAuthService : IAuthService
 {
     private bool _isBusinessOwner;
+    private bool _isLoggedIn;
 
-    public bool IsLoggedIn => true;
-    public string? CurrentUserId => MockStore.DemoUserId;
-    public bool IsBusinessOwner => _isBusinessOwner;
+    // Browsing (Home feed, Search, business profiles) never requires an account.
+    // You're only "logged in" after Sign In / Create Account actually runs.
+    public bool IsLoggedIn => _isLoggedIn;
+    public string? CurrentUserId => _isLoggedIn ? MockStore.DemoUserId : null;
+    public bool IsBusinessOwner => _isLoggedIn && _isBusinessOwner;
 
     public Task<bool> SignUpAsync(string email, string password, string fullName, string phone, bool isBusinessOwner)
     {
         _isBusinessOwner = isBusinessOwner;
+        _isLoggedIn = true;
         return Task.FromResult(true);
     }
 
@@ -188,17 +192,20 @@ public class MockAuthService : IAuthService
     {
         // Any credentials work in the demo. "biz@" prefix signs in as a business owner.
         _isBusinessOwner = email.TrimStart().StartsWith("biz", StringComparison.OrdinalIgnoreCase);
+        _isLoggedIn = true;
         return Task.FromResult(true);
     }
 
     public Task SignOutAsync()
     {
         _isBusinessOwner = false;
+        _isLoggedIn = false;
         return Task.CompletedTask;
     }
 
     public Task<User?> GetCurrentUserAsync()
     {
+        if (!_isLoggedIn) return Task.FromResult<User?>(null);
         var user = MockStore.DemoUser;
         user.IsBusinessOwner = _isBusinessOwner;
         return Task.FromResult<User?>(user);
