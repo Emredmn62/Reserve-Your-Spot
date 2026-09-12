@@ -27,16 +27,138 @@ public static class MockStore
         CreatedAt = DateTime.Now
     };
 
-    // Empty — ready for real sign-ups.
-    public static readonly List<Business> Businesses = new();
-    public static readonly List<Service> Services = new();
-    public static readonly List<Staff> Staff = new();
+    // ---------------------------------------------------------------------
+    // DEMO SEED DATA — flip this to false to go back to a clean, empty app
+    // ready for real launch. True is for previewing what a "finished" app
+    // looks like on the customer side: 5 example businesses, already
+    // approved, each with a couple of feed posts.
+    // ---------------------------------------------------------------------
+    private const bool IncludeDemoSeedData = true;
+
+    public static readonly List<Business> Businesses = IncludeDemoSeedData ? BuildDemoBusinesses() : new();
+    public static readonly List<Service> Services = IncludeDemoSeedData ? BuildDemoServices() : new();
+    public static readonly List<Staff> Staff = IncludeDemoSeedData ? BuildDemoStaff() : new();
+    public static readonly List<Post> Posts = IncludeDemoSeedData ? BuildDemoPosts() : new();
+
     public static readonly List<Review> Reviews = new();
     public static readonly HashSet<string> Favourites = new();
     public static readonly List<LoyaltyCard> LoyaltyCards = new();
     public static readonly List<Booking> Bookings = new();
     public static readonly List<Payment> Payments = new();
-    public static readonly List<Post> Posts = new();
+
+    private static Category Cat(string slug) => Category.Defaults.First(c => c.Slug == slug);
+
+    private static List<Business> BuildDemoBusinesses() => new()
+    {
+        new Business
+        {
+            Id = "demo-biz-1", OwnerId = "demo-owner-1", Name = "Fade Masters Barbershop", Slug = "fade-masters",
+            Description = "Precision fades, hot-towel shaves and beard sculpting in the heart of Shoreditch.",
+            CategoryId = "1", Category = Cat("barbers"),
+            Address = "42 Rivington Street, Shoreditch, London EC2A 3AY",
+            Latitude = 51.5265, Longitude = -0.0805, Phone = "+44 20 7946 0111",
+            Rating = 4.8, TotalReviews = 214, IsApproved = true, IsFeatured = true,
+            DepositPercentage = 20, SubscriptionPlan = "active"
+        },
+        new Business
+        {
+            Id = "demo-biz-2", OwnerId = "demo-owner-2", Name = "The Gilded Chair", Slug = "the-gilded-chair",
+            Description = "A boutique salon for cut, colour and treatments in Soho.",
+            CategoryId = "2", Category = Cat("hair"),
+            Address = "9 Berwick Street, Soho, London W1F 0PP",
+            Latitude = 51.5138, Longitude = -0.1360, Phone = "+44 20 7946 0122",
+            Rating = 4.7, TotalReviews = 168, IsApproved = true, IsFeatured = true,
+            DepositPercentage = 25, SubscriptionPlan = "active"
+        },
+        new Business
+        {
+            Id = "demo-biz-3", OwnerId = "demo-owner-3", Name = "Lux Nail Lounge", Slug = "lux-nail-lounge",
+            Description = "Gel, BIAB and nail art by award-winning techs in Islington.",
+            CategoryId = "3", Category = Cat("nails"),
+            Address = "17 Upper Street, Islington, London N1 0PQ",
+            Latitude = 51.5340, Longitude = -0.1030, Phone = "+44 20 7946 0133",
+            Rating = 4.6, TotalReviews = 97, IsApproved = true, IsFeatured = false,
+            DepositPercentage = 20, SubscriptionPlan = "active"
+        },
+        new Business
+        {
+            Id = "demo-biz-4", OwnerId = "demo-owner-4", Name = "Iron & Oak PT Studio", Slug = "iron-and-oak",
+            Description = "Private personal training studio in Hackney. 1-to-1 and small-group coaching.",
+            CategoryId = "6", Category = Cat("pt"),
+            Address = "3 Morning Lane, Hackney, London E9 6ND",
+            Latitude = 51.5460, Longitude = -0.0540, Phone = "+44 20 7946 0144",
+            Rating = 4.9, TotalReviews = 76, IsApproved = true, IsFeatured = true,
+            DepositPercentage = 30, SubscriptionPlan = "active"
+        },
+        new Business
+        {
+            Id = "demo-biz-5", OwnerId = "demo-owner-5", Name = "Serenity Massage Rooms", Slug = "serenity-massage",
+            Description = "Deep tissue, sports and Swedish massage near Camden Lock.",
+            CategoryId = "8", Category = Cat("massage"),
+            Address = "88 Chalk Farm Road, Camden, London NW1 8AR",
+            Latitude = 51.5430, Longitude = -0.1490, Phone = "+44 20 7946 0155",
+            Rating = 4.5, TotalReviews = 52, IsApproved = true, IsFeatured = false,
+            DepositPercentage = 20, SubscriptionPlan = "active"
+        }
+    };
+
+    private static List<Service> BuildDemoServices() => new()
+    {
+        new() { Id = "demo-svc-1a", BusinessId = "demo-biz-1", Name = "Skin Fade", Description = "Bald or skin fade with a line-up.", DurationMinutes = 45, Price = 28m, DepositAmount = 6m },
+        new() { Id = "demo-svc-1b", BusinessId = "demo-biz-1", Name = "Cut & Beard Combo", Description = "Full haircut plus beard shape-up.", DurationMinutes = 60, Price = 38m, DepositAmount = 8m },
+
+        new() { Id = "demo-svc-2a", BusinessId = "demo-biz-2", Name = "Cut & Blow Dry", Description = "Consultation, cut and blow-dry finish.", DurationMinutes = 60, Price = 55m, DepositAmount = 14m },
+        new() { Id = "demo-svc-2b", BusinessId = "demo-biz-2", Name = "Balayage", Description = "Hand-painted lightening, natural grow-out.", DurationMinutes = 180, Price = 150m, DepositAmount = 38m },
+
+        new() { Id = "demo-svc-3a", BusinessId = "demo-biz-3", Name = "Gel Manicure", Description = "Shape, cuticle work and gel colour.", DurationMinutes = 45, Price = 32m, DepositAmount = 6m },
+        new() { Id = "demo-svc-3b", BusinessId = "demo-biz-3", Name = "BIAB Overlay", Description = "Strengthening overlay on natural nails.", DurationMinutes = 60, Price = 42m, DepositAmount = 8m },
+
+        new() { Id = "demo-svc-4a", BusinessId = "demo-biz-4", Name = "1-to-1 PT Session", Description = "60 minutes of coached strength training.", DurationMinutes = 60, Price = 60m, DepositAmount = 18m },
+        new() { Id = "demo-svc-4b", BusinessId = "demo-biz-4", Name = "Assessment & Plan", Description = "Movement screen + 4-week programme.", DurationMinutes = 90, Price = 80m, DepositAmount = 24m },
+
+        new() { Id = "demo-svc-5a", BusinessId = "demo-biz-5", Name = "Deep Tissue 60", Description = "Firm-pressure work on tension and knots.", DurationMinutes = 60, Price = 65m, DepositAmount = 13m },
+        new() { Id = "demo-svc-5b", BusinessId = "demo-biz-5", Name = "Relax Swedish 90", Description = "Full-body flowing massage.", DurationMinutes = 90, Price = 85m, DepositAmount = 17m },
+    };
+
+    private static List<Staff> BuildDemoStaff() => new()
+    {
+        new() { Id = "demo-stf-1a", BusinessId = "demo-biz-1", Name = "Marcus Bell", Role = "Master Barber", Bio = "15 years on the chair. Fade specialist." },
+        new() { Id = "demo-stf-1b", BusinessId = "demo-biz-1", Name = "Deniz Kaya", Role = "Senior Barber", Bio = "Scissor work and classic cuts." },
+        new() { Id = "demo-stf-2a", BusinessId = "demo-biz-2", Name = "Sofia Ricci", Role = "Colour Director", Bio = "Balayage and blonde specialist." },
+        new() { Id = "demo-stf-3a", BusinessId = "demo-biz-3", Name = "Mia Chen", Role = "Lead Nail Tech", Bio = "Nail art and structured gel." },
+        new() { Id = "demo-stf-4a", BusinessId = "demo-biz-4", Name = "Tom Fraser", Role = "Head Coach", Bio = "S&C coach, ex-rugby." },
+        new() { Id = "demo-stf-5a", BusinessId = "demo-biz-5", Name = "Elena Novak", Role = "Massage Therapist", Bio = "Deep tissue and sports therapy." },
+    };
+
+    private static List<Post> BuildDemoPosts()
+    {
+        // Reuse the SAME Business instances already in `Businesses` (not fresh copies),
+        // so a later change to a business (e.g. IsApproved) is reflected on its posts too.
+        var businesses = Businesses.ToDictionary(b => b.Id);
+        (string bizId, string caption, double hoursAgo, string seed)[] rows =
+        {
+            ("demo-biz-1", "Fresh fades all week — walk-ins welcome, but book ahead for Saturday 💈", 2, "fade1"),
+            ("demo-biz-1", "Hot towel shave Sunday special — £5 off before midday.", 20, "fade2"),
+            ("demo-biz-2", "Balayage transformation from this afternoon ✨", 5, "hair1"),
+            ("demo-biz-2", "New colour range just landed — ask about it at your next visit.", 30, "hair2"),
+            ("demo-biz-3", "Chrome nails are back in for autumn 💅", 8, "nails1"),
+            ("demo-biz-3", "BIAB restock — book your overlay this week.", 45, "nails2"),
+            ("demo-biz-4", "Small group session this morning — three spots left for Thursday.", 3, "pt1"),
+            ("demo-biz-4", "New 4-week strength programme now bookable.", 26, "pt2"),
+            ("demo-biz-5", "Sunday reset — deep tissue slots open all afternoon.", 10, "massage1"),
+            ("demo-biz-5", "New aromatherapy add-on available this month.", 50, "massage2"),
+        };
+
+        return rows.Select((r, i) => new Post
+        {
+            Id = $"demo-post-{i + 1}",
+            BusinessId = r.bizId,
+            Business = businesses[r.bizId],
+            Caption = r.caption,
+            ImageUrl = $"https://picsum.photos/seed/{r.seed}/900/700",
+            CreatedAt = DateTime.Now.AddHours(-r.hoursAgo)
+        }).ToList();
+    }
 
     // Invite codes you hand out. One code = one business.
     // Replace/extend with your real codes (in production these live in the DB).
