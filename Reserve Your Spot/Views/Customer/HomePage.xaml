@@ -12,7 +12,9 @@
                  IsRefreshing="{Binding IsBusy}"
                  RefreshColor="{StaticResource ColorGold}">
         <ScrollView>
-            <VerticalStackLayout Padding="0,0,0,24">
+            <VerticalStackLayout Padding="0,0,0,24"
+                                 MaximumWidthRequest="480"
+                                 HorizontalOptions="Center">
 
                 <!-- Top bar -->
                 <Grid ColumnDefinitions="*,52"
@@ -101,9 +103,13 @@
                         <DataTemplate x:DataType="models:Post">
                             <Border BackgroundColor="{StaticResource ColorSurface}"
                                     Stroke="{StaticResource ColorSurface2}"
-                                    StrokeShape="RoundRectangle 0"
-                                    Margin="0,0,0,10"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 18"
+                                    Margin="16,0,16,18"
                                     Padding="0">
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,6" Radius="16" Opacity="0.35" />
+                                </Border.Shadow>
 
                                 <VerticalStackLayout>
                                     <!-- Business header -->
@@ -139,7 +145,7 @@
                                     <!-- Photo -->
                                     <Image Source="{Binding ImageUrl}"
                                            Aspect="AspectFill"
-                                           HeightRequest="360"
+                                           HeightRequest="300"
                                            BackgroundColor="{StaticResource ColorSurface2}">
                                         <Image.GestureRecognizers>
                                             <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=NavigateToPostBusinessCommand}"

@@ -135,27 +135,29 @@ public static class MockStore
         // Reuse the SAME Business instances already in `Businesses` (not fresh copies),
         // so a later change to a business (e.g. IsApproved) is reflected on its posts too.
         var businesses = Businesses.ToDictionary(b => b.Id);
-        (string bizId, string caption, double hoursAgo, string seed)[] rows =
+        (string bizId, string caption, double hoursAgo, string keywords)[] rows =
         {
-            ("demo-biz-1", "Fresh fades all week — walk-ins welcome, but book ahead for Saturday 💈", 2, "fade1"),
-            ("demo-biz-1", "Hot towel shave Sunday special — £5 off before midday.", 20, "fade2"),
-            ("demo-biz-2", "Balayage transformation from this afternoon ✨", 5, "hair1"),
-            ("demo-biz-2", "New colour range just landed — ask about it at your next visit.", 30, "hair2"),
-            ("demo-biz-3", "Chrome nails are back in for autumn 💅", 8, "nails1"),
-            ("demo-biz-3", "BIAB restock — book your overlay this week.", 45, "nails2"),
-            ("demo-biz-4", "Small group session this morning — three spots left for Thursday.", 3, "pt1"),
-            ("demo-biz-4", "New 4-week strength programme now bookable.", 26, "pt2"),
-            ("demo-biz-5", "Sunday reset — deep tissue slots open all afternoon.", 10, "massage1"),
-            ("demo-biz-5", "New aromatherapy add-on available this month.", 50, "massage2"),
+            ("demo-biz-1", "Fresh fades all week — walk-ins welcome, but book ahead for Saturday 💈", 2, "barbershop,haircut"),
+            ("demo-biz-1", "Hot towel shave Sunday special — £5 off before midday.", 20, "barber,beard"),
+            ("demo-biz-2", "Balayage transformation from this afternoon ✨", 5, "hairsalon,hairstyle"),
+            ("demo-biz-2", "New colour range just landed — ask about it at your next visit.", 30, "haircolor,salon"),
+            ("demo-biz-3", "Chrome nails are back in for autumn 💅", 8, "nailart,manicure"),
+            ("demo-biz-3", "BIAB restock — book your overlay this week.", 45, "nailsalon,manicure"),
+            ("demo-biz-4", "Small group session this morning — three spots left for Thursday.", 3, "gym,personaltraining"),
+            ("demo-biz-4", "New 4-week strength programme now bookable.", 26, "fitness,weightlifting"),
+            ("demo-biz-5", "Sunday reset — deep tissue slots open all afternoon.", 10, "massage,spa"),
+            ("demo-biz-5", "New aromatherapy add-on available this month.", 50, "massagetherapy,relax"),
         };
 
+        // Category-relevant placeholder photos (real Flickr photos matched by keyword,
+        // no API key needed). Swap for real uploads once businesses can add their own.
         return rows.Select((r, i) => new Post
         {
             Id = $"demo-post-{i + 1}",
             BusinessId = r.bizId,
             Business = businesses[r.bizId],
             Caption = r.caption,
-            ImageUrl = $"https://picsum.photos/seed/{r.seed}/900/700",
+            ImageUrl = $"https://loremflickr.com/900/700/{r.keywords}?lock={i + 1}",
             CreatedAt = DateTime.Now.AddHours(-r.hoursAgo)
         }).ToList();
     }
