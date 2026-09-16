@@ -79,6 +79,12 @@ public class BookingService : IBookingService
         catch { return null; }
     }
 
+    public async Task<Booking?> GetBookingByIdAsync(string bookingId)
+    {
+        try { return await _supabase.GetSingleAsync<Booking>("bookings", $"id=eq.{bookingId}&select=*"); }
+        catch { return null; }
+    }
+
     public async Task<List<Booking>> GetCustomerBookingsAsync(string customerId)
     {
         try

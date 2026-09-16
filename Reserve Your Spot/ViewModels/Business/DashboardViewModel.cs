@@ -11,6 +11,7 @@ public partial class DashboardViewModel : BaseViewModel
     private readonly IBookingService _bookingService;
     private readonly IBusinessService _businessService;
     private readonly IAuthService _authService;
+    private readonly IPaymentService _paymentService;
 
     [ObservableProperty] private string _businessName = string.Empty;
     [ObservableProperty] private string _todayDate = DateTime.Today.ToString("dddd, d MMMM");
@@ -18,14 +19,17 @@ public partial class DashboardViewModel : BaseViewModel
     [ObservableProperty] private int _todayBookingCount;
     [ObservableProperty] private decimal _outstandingBalance;
     [ObservableProperty] private Models.Business? _business;
+    [ObservableProperty] private bool _isProcessingPayment;
 
     public ObservableCollection<Booking> TodaysBookings { get; } = new();
 
-    public DashboardViewModel(IBookingService bookingService, IBusinessService businessService, IAuthService authService)
+    public DashboardViewModel(IBookingService bookingService, IBusinessService businessService,
+        IAuthService authService, IPaymentService paymentService)
     {
         _bookingService = bookingService;
         _businessService = businessService;
         _authService = authService;
+        _paymentService = paymentService;
         Title = "Dashboard";
     }
 
@@ -70,6 +74,46 @@ public partial class DashboardViewModel : BaseViewModel
     [RelayCommand]
     private async Task NewPostAsync()
         => await Shell.Current.GoToAsync(Constants.AppConstants.RouteCreatePost);
+
+    [RelayCommand]
+    private async Task SubscribeAsync()
+    {
+        if (Business == null) return;
+        IsProcessingPayment = true;
+        try
+        {
+            var url = await _paymentService.CreateSubscriptionCheckoutAsync(Business.Id);
+            if (!string.IsNullOrEmpty(url))
+            {
+                await Launcher.Default.OpenAsync(url);
+                await Shell.Current.DisplayAlert("Subscribe",
+                    "Finish payment in the browser, then pull down here to refresh.", "OK");
+            }
+            await LoadDataAsync();
+            OnPropertyChanged(nameof(Business)); // same object instance in mock - force the UI to re-read it
+        }
+        finally { IsProcessingPayment = false; }
+    }
+
+    [RelayCommand]
+    private async Task ConnectStripeAsync()
+    {
+        if (Business == null) return;
+        IsProcessingPayment = true;
+        try
+        {
+            var url = await _paymentService.CreateConnectOnboardingLinkAsync(Business.Id);
+            if (!string.IsNullOrEmpty(url))
+            {
+                await Launcher.Default.OpenAsync(url);
+                await Shell.Current.DisplayAlert("Connect to Stripe",
+                    "Finish your bank details in the browser, then pull down here to refresh.", "OK");
+            }
+            await LoadDataAsync();
+            OnPropertyChanged(nameof(Business));
+        }
+        finally { IsProcessingPayment = false; }
+    }
 
     [RelayCommand]
     private async Task ConfirmBookingAsync(Booking booking)

@@ -8,18 +8,20 @@ public static class AppConstants
     public const string StripePublishableKey = "YOUR_STRIPE_PUBLISHABLE_KEY";
     public const string GoogleMapsKey = "YOUR_GOOGLE_MAPS_KEY";
     // ---- Monetisation ----
-    // Single plan. No cut of bookings — the subscription is the whole business model.
-    public const decimal SubscriptionMonthlyPrice = 10.00m;   // £/month
-    public const int FreeTrialMonths = 3;                     // first N months free
-    public const decimal DepositPlatformFeePercent = 0.00m;   // we do NOT skim deposits
+    // A business pays a small yearly listing fee, then 5% of every booking they
+    // take through the app. Money goes straight to the business via Stripe
+    // Connect; the 5% is skimmed automatically as a Stripe application fee.
+    // Change this one number if you want a different yearly price.
+    public const decimal SubscriptionYearlyPrice = 20.00m;    // £/year
+    public const decimal BookingPlatformFeePercent = 0.05m;   // your 5% cut of every booking
     public const string SubscriptionCurrency = "gbp";
 
-    // Set to your Stripe Billing Price ID (price_...) once Stripe is configured.
-    public const string StripeSubscriptionPriceId = "YOUR_STRIPE_PRICE_ID";
+    // Stripe dashboard -> Product catalog -> create a recurring YEARLY price
+    // for "Reserve Your Spot listing" -> paste its id (price_...) here.
+    public const string StripeSubscriptionYearlyPriceId = "YOUR_STRIPE_YEARLY_PRICE_ID";
 
-    // Kept for backwards-compat with existing code paths.
-    public const decimal PlatformFeePercent = DepositPlatformFeePercent;
-    public const decimal ProMonthlyPrice = SubscriptionMonthlyPrice;
+    // Kept for backwards-compat with any older references.
+    public const decimal PlatformFeePercent = BookingPlatformFeePercent;
 
     // Route names
     public const string RouteOnboarding = "onboarding";

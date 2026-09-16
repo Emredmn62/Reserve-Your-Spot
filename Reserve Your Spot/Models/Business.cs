@@ -25,6 +25,18 @@ public class Business
     public bool IsFeatured { get; set; }
     public DateTime? BoostExpiresAt { get; set; }
     public string SubscriptionPlan { get; set; } = "free";
+
+    // ---- Payments (Stripe Connect) ----
+    // A business is only "live" (IsApproved) once BOTH of these are true:
+    // the yearly listing fee is paid, and they've connected a bank account
+    // to actually receive booking payments.
+    public string SubscriptionStatus { get; set; } = "none"; // none | active | past_due | canceled
+    public DateTime? SubscriptionRenewsAt { get; set; }
+    public string? StripeConnectAccountId { get; set; }
+    public bool StripeConnectOnboarded { get; set; }
+
+    public bool IsSubscriptionActive => SubscriptionStatus is "active";
+    public bool IsReadyToGoLive => IsSubscriptionActive && StripeConnectOnboarded;
     public double Rating { get; set; }
     public int TotalReviews { get; set; }
     public double? DistanceKm { get; set; }

@@ -1,98 +1,75 @@
-# Reserve Your Spot — pricing & how businesses pay
+# Reserve Your Spot — pricing & how businesses get paid
+
+> Superseded the original £10/month-no-fee plan below with the model we
+> settled on: a small yearly fee plus a per-booking commission. Cheaper to
+> try, scales with how well the app actually works for each business.
 
 ## The plan
 
 | | |
 |---|---|
-| **Price** | **£10 / month** per business |
-| **Free trial** | **First 3 months free**, then billed monthly |
-| **Booking cut** | **None.** We don't take a percentage of deposits (competitors like Fresha do). The subscription is the whole model. |
-| **Onboarding** | **Invite-only.** A business needs a valid invite code — **one code per business** — to create a listing. |
-| **Going live** | A new listing is **Pending**. It only appears to customers once the subscription is **active**. |
+| **Listing fee** | **£20 / year** per business (edit `AppConstants.SubscriptionYearlyPrice` for a different number) |
+| **Booking cut** | **5%** of every booking, taken automatically via Stripe |
+| **How money moves** | Customer pays the full price in-app. Stripe splits it instantly: 95% straight to the business's own bank, 5% to yours. You never hold customer money. |
+| **Onboarding** | **Invite-only.** A business needs a valid, unused invite code to create a listing — one code per business. |
+| **Going live** | A listing is **Pending** until BOTH: the £20/year fee is paid, and the business has connected a Stripe account to receive money. Then it's visible to customers. |
 
-Constants live in `Reserve Your Spot/Constants/AppConstants.cs`
-(`SubscriptionMonthlyPrice`, `FreeTrialMonths`, `DepositPlatformFeePercent = 0`).
+Full implementation details, secrets, and the deploy steps are in **`STRIPE_SETUP.md`**.
 
-### Why £10 (not £15)
-Booksy / Setmore / Acuity sit at £15–30/mo. £10 undercuts everyone and is an
-easy "yes" for a brand-new app with no reputation yet. Once you have reviews and
-a few hundred businesses you can raise it for *new* signups and grandfather early
-ones. **Founder option:** offer the first ~20 businesses **£5/mo locked forever** —
-creates urgency and rewards the people who took the risk early.
+### Why this over a flat monthly fee
+With zero businesses on the app on day one, the biggest problem isn't
+revenue — it's convincing the *first* businesses to bother signing up. £20/year
+is a low-risk "sure, why not" compared to a recurring monthly bill for an app
+with no track record yet. And taking 5% of bookings means you only make real
+money once the app is actually generating business for them — your incentives
+line up with theirs. This is close to how Fresha built its market share against
+subscription-only rivals like Booksy.
 
 ---
 
-## What's already built (works on mock data, no backend)
+## What's built (works right now on mock data, no backend needed)
 
-- Single £10 plan + 3-month-trial copy in the business signup flow
-- **Invite code field** on "Setup Your Business" — required, validated, one-per-business
-  (`IReferralService` / `MockReferralService`, seed codes `FOUNDER-001..003`)
-- New listings are created **Pending** (`IsApproved = false`); customers only ever
-  see approved listings (`MockBusinessService` filters on `IsApproved`)
-- The app starts **empty** — no demo businesses
+- **Business model** (`Models/Business.cs`): `SubscriptionStatus`, `SubscriptionRenewsAt`,
+  `StripeConnectAccountId`, `StripeConnectOnboarded`, and `IsReadyToGoLive` (both true)
+- **Invite code gate** on Setup Your Business (`IReferralService`, seed codes `FOUNDER-001..003` in mock)
+- **Dashboard "Step 1 / Step 2" banners** — Subscribe, then Connect to Stripe — both required before a listing goes live; a green "You're live" banner once it has
+- **Full in-app payment** for bookings (not a deposit) — `PaymentPage` sends the customer to Stripe Checkout for the whole service price, waits for confirmation, then shows the booking as confirmed
+- **`IPaymentService`** redesigned around Stripe Checkout: `CreateBookingCheckoutAsync`, `CreateSubscriptionCheckoutAsync`, `CreateConnectOnboardingLinkAsync` — each returns a URL the app opens in the browser
+- **Real backend code, ready to deploy**: `Services/PaymentService.cs`, `Services/ReferralService.cs`, and four Supabase Edge Functions in `supabase/functions/` that actually talk to Stripe
+- Mock versions of everything above so the whole flow is demoable with zero setup — Subscribe/Connect/Pay all complete instantly with no real money moving
 
-## What still needs the real backend (only you can start these)
+## What only you can do — see STRIPE_SETUP.md for the exact steps
 
-### 1. Supabase (free tier)
-- Create a project at supabase.com
-- Run the SQL in `Reserve Your Spot/Services/SupabaseService.cs` (comment block)
-- Add two tables:
-  ```sql
-  create table referral_codes (
-    code text primary key,
-    issued_to text,
-    used_by_business_id uuid references businesses(id),
-    created_at timestamptz default now(),
-    used_at timestamptz
-  );
-  alter table businesses add column subscription_status text default 'none';
-  -- values: none | trialing | active | past_due | canceled
-  ```
-- Put URL + anon key in `AppConstants.cs`
-
-### 2. Stripe (you — needs your identity + bank details, I can't do this)
-- Create a Stripe account, add your bank for payouts
-- **Products → add a product** "Reserve Your Spot — Business", recurring, £10/month,
-  **add a free trial of 3 months** on the price (or set `trial_period_days: 90`
-  when creating the subscription)
-- Copy the **Price ID** (`price_...`) into `AppConstants.StripeSubscriptionPriceId`
-- Copy the publishable key into `AppConstants.StripePublishableKey`
-- Money from every subscription lands in **your** Stripe balance and pays out to
-  **your** bank automatically. No Stripe Connect needed — you're the only merchant.
-
-### 3. Supabase Edge Functions (I can write these once you have keys)
-| Function | Does |
-|---|---|
-| `create-subscription-checkout` | Business taps "Subscribe" → returns a Stripe Checkout URL for the £10 plan with the 3-month trial |
-| `stripe-webhook` | Stripe calls this on `checkout.session.completed`, `customer.subscription.updated/deleted` → sets `businesses.subscription_status` and flips `is_approved` to true when `active`/`trialing`, false when `canceled`/`past_due` |
-
-### 4. App changes (I do these once the above exists)
-- Swap the 4 `Mock*` lines in `MauiProgram.RegisterServices` for the real
-  `AuthService` / `BusinessService` / `BookingService` / `PaymentService`
-- Real `ReferralService` hitting the `referral_codes` table
-- Business **Dashboard**: if `subscription_status` is `none`, show a
-  "You're pending — Subscribe to go live" banner + button that opens the
-  Checkout URL. If `trialing`, show "Free trial — N days left".
-- A tiny **admin** way to mint invite codes (either the existing `booklocal-web`
-  admin panel, or just `insert into referral_codes` by hand at first)
+1. Create a Stripe account, turn on **Connect**
+2. Create the £20/year recurring price
+3. `supabase functions deploy` the four functions already written
+4. Set the Stripe secrets (`supabase secrets set ...`)
+5. Add the webhook endpoint in the Stripe dashboard
+6. Paste your real keys into `AppConstants.cs`
+7. Flip `MauiProgram.cs` from `Mock*` services to the real ones
 
 ---
 
 ## The full flow, end to end
 
-1. Business installs the app → **Sign up** → "I'm a business owner"
-2. **Setup Your Business** → fills profile + enters **invite code** → listing saved as **Pending**, code marked used
-3. Dashboard shows **"Subscribe to go live — £10/mo, 3 months free"**
-4. Taps Subscribe → Stripe Checkout → enters card (not charged for 90 days)
-5. Stripe → `stripe-webhook` → `subscription_status = trialing`, `is_approved = true`
-6. Listing now appears in customer search. Business adds services + staff.
-7. After 3 months Stripe charges £10/mo automatically → stays `active`
-8. If a payment fails or they cancel → webhook sets `is_approved = false` → listing hidden (data kept)
+1. Business signs up → "I'm a business owner" → **Setup Your Business** → enters
+   a valid **invite code** → listing created as **Pending**, code marked used
+2. Dashboard shows **Step 1: Subscribe — £20/year** → Stripe Checkout → paid
+3. Dashboard shows **Step 2: Connect to Stripe** → Stripe Express onboarding
+   (ID + bank details, hosted by Stripe) → completed
+4. Webhook sees both are done → flips `is_approved = true` → listing now
+   appears in customer search and the feed
+5. Business adds services, staff, posts
+6. Customer books a service → pays the **full price** in-app via Stripe
+   Checkout → webhook confirms → 95% goes to the business, 5% to you,
+   booking flips to **Confirmed**
+7. If the business's subscription lapses or is cancelled, the webhook flips
+   `is_approved = false` again — listing hidden, nothing deleted
 
 ## Handing out invite codes
 
-Until the admin UI exists: in Supabase SQL editor,
+Once real: in the Supabase SQL editor,
 ```sql
 insert into referral_codes (code, issued_to) values ('BARBER-JON', 'Jon @ Fade St');
 ```
-Give `BARBER-JON` to that one business. When they sign up it's consumed and can't be reused.
+Give `BARBER-JON` to that one business. It's consumed the moment they sign up with it.

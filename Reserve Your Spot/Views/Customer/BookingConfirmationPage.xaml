@@ -61,7 +61,7 @@
                             StrokeShape="RoundRectangle 8"
                             Padding="10,6"
                             HorizontalOptions="Start">
-                        <Label Text="✓ Deposit Paid"
+                        <Label Text="✓ Paid in Full"
                                FontSize="13" FontAttributes="Bold"
                                TextColor="{StaticResource ColorGold}" />
                     </Border>

@@ -226,11 +226,28 @@ create table businesses (
   subscription_plan text default 'free',
   rating double precision default 0,
   total_reviews int default 0,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  -- Payments (Stripe Connect) - a business only goes live (is_approved=true)
+  -- once subscription_status='active' AND stripe_connect_onboarded=true.
+  -- Both flags are flipped by supabase/functions/stripe-webhook, not the app.
+  subscription_status text default 'none', -- none | active | past_due | canceled
+  subscription_renews_at timestamptz,
+  stripe_connect_account_id text,
+  stripe_connect_onboarded boolean default false
 );
 create index on businesses(latitude, longitude);
 create index on businesses(category_id);
 create index on businesses(is_approved, is_featured);
+create unique index on businesses(stripe_connect_account_id) where stripe_connect_account_id is not null;
+
+-- Invite-only onboarding: one code redeems one business listing.
+create table referral_codes (
+  code text primary key,
+  issued_to text,
+  used_by_business_id uuid references businesses(id),
+  created_at timestamptz default now(),
+  used_at timestamptz
+);
 
 -- services
 create table services (

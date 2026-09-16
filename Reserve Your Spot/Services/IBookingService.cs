@@ -6,6 +6,7 @@ public interface IBookingService
 {
     Task<List<TimeSlot>> GetAvailableSlotsAsync(string businessId, string? staffId, DateTime date, int durationMinutes);
     Task<Booking?> CreateBookingAsync(Booking booking);
+    Task<Booking?> GetBookingByIdAsync(string bookingId);
     Task<List<Booking>> GetCustomerBookingsAsync(string customerId);
     Task<List<Booking>> GetBusinessBookingsAsync(string businessId, DateTime? date = null);
     Task<bool> CancelBookingAsync(string bookingId, string reason);

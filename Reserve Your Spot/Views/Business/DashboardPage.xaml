@@ -36,6 +36,69 @@
                     <Label Text="{Binding ErrorMessage}" TextColor="{StaticResource ColorError}" FontSize="14" />
                 </Border>
 
+                <!-- Step 1: subscribe -->
+                <Border BackgroundColor="{StaticResource ColorSurface}"
+                        Stroke="{StaticResource ColorGold}"
+                        StrokeThickness="1.5"
+                        StrokeShape="RoundRectangle 14"
+                        Padding="16"
+                        IsVisible="{Binding Business.IsSubscriptionActive, Converter={StaticResource InverseBool}}">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="You're not live yet — Step 1 of 2" FontSize="15" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorWhite}" />
+                        <Label Text="Subscribe to list your business. £20/year, cancel anytime."
+                               FontSize="13" TextColor="{StaticResource ColorGrey}" />
+                        <Button Text="Subscribe — £20/year"
+                                Command="{Binding SubscribeCommand}"
+                                IsEnabled="{Binding IsProcessingPayment, Converter={StaticResource InverseBool}}"
+                                BackgroundColor="{StaticResource ColorGold}"
+                                TextColor="{StaticResource ColorBlack}"
+                                CornerRadius="10" HeightRequest="44"
+                                FontAttributes="Bold" FontSize="14" Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Step 2: connect Stripe to actually get paid -->
+                <Border BackgroundColor="{StaticResource ColorSurface}"
+                        Stroke="{StaticResource ColorGold}"
+                        StrokeThickness="1.5"
+                        StrokeShape="RoundRectangle 14"
+                        Padding="16"
+                        IsVisible="False">
+                    <Border.Triggers>
+                        <MultiTrigger TargetType="Border">
+                            <MultiTrigger.Conditions>
+                                <BindingCondition Binding="{Binding Business.IsSubscriptionActive}" Value="True" />
+                                <BindingCondition Binding="{Binding Business.StripeConnectOnboarded}" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="IsVisible" Value="True" />
+                        </MultiTrigger>
+                    </Border.Triggers>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Step 2 of 2 — connect your bank" FontSize="15" FontAttributes="Bold"
+                               TextColor="{StaticResource ColorWhite}" />
+                        <Label Text="Connect a Stripe account so booking payments reach you directly. Takes about 5 minutes."
+                               FontSize="13" TextColor="{StaticResource ColorGrey}" />
+                        <Button Text="Connect to Stripe"
+                                Command="{Binding ConnectStripeCommand}"
+                                IsEnabled="{Binding IsProcessingPayment, Converter={StaticResource InverseBool}}"
+                                BackgroundColor="{StaticResource ColorGold}"
+                                TextColor="{StaticResource ColorBlack}"
+                                CornerRadius="10" HeightRequest="44"
+                                FontAttributes="Bold" FontSize="14" Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Live indicator -->
+                <Border BackgroundColor="#1A2E1A"
+                        Stroke="{StaticResource ColorSuccess}"
+                        StrokeShape="RoundRectangle 12"
+                        Padding="12,10"
+                        IsVisible="{Binding Business.IsApproved}">
+                    <Label Text="✓ You're live — customers can find and book you"
+                           FontSize="13" FontAttributes="Bold" TextColor="{StaticResource ColorSuccess}" />
+                </Border>
+
                 <!-- Stats row -->
                 <Grid ColumnDefinitions="*,*,*" ColumnSpacing="12">
                     <Border Grid.Column="0"

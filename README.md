@@ -39,11 +39,15 @@ Requires the .NET 10 SDK and the `maui` workloads (`dotnet workload install maui
 ### Mock vs real backend
 
 The app ships wired to **mock services** (`Reserve Your Spot/Services/MockData.cs`)
-so it runs with zero setup. To go live:
+so it runs with zero setup — including fake-but-instant Stripe subscribe/connect/pay
+flows. To go live, see **[STRIPE_SETUP.md](STRIPE_SETUP.md)** (payments) and
+**[MONETISATION.md](MONETISATION.md)** (the pricing model and full flow). Short version:
 
 1. Put your Supabase + Stripe keys in `Reserve Your Spot/Constants/AppConstants.cs`
-2. In `Reserve Your Spot/MauiProgram.cs` → `RegisterServices`, swap the four
-   `Mock*` registrations for `AuthService` / `BusinessService` / `BookingService` / `PaymentService`
+2. Deploy the functions in `supabase/functions/` and set their secrets
+3. In `Reserve Your Spot/MauiProgram.cs` → `RegisterServices`, swap the five
+   `Mock*` registrations for `AuthService` / `BusinessService` / `BookingService` /
+   `PaymentService` / `ReferralService`
 
 ## Publishing to Google Play
 

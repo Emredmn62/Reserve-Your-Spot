@@ -58,7 +58,7 @@ public static class MockStore
             Address = "42 Rivington Street, Shoreditch, London EC2A 3AY",
             Latitude = 51.5265, Longitude = -0.0805, Phone = "+44 20 7946 0111",
             Rating = 4.8, TotalReviews = 214, IsApproved = true, IsFeatured = true,
-            DepositPercentage = 20, SubscriptionPlan = "active"
+            DepositPercentage = 20, SubscriptionPlan = "active", SubscriptionStatus = "active", SubscriptionRenewsAt = DateTime.Now.AddMonths(6), StripeConnectAccountId = "acct_demo", StripeConnectOnboarded = true
         },
         new Business
         {
@@ -68,7 +68,7 @@ public static class MockStore
             Address = "9 Berwick Street, Soho, London W1F 0PP",
             Latitude = 51.5138, Longitude = -0.1360, Phone = "+44 20 7946 0122",
             Rating = 4.7, TotalReviews = 168, IsApproved = true, IsFeatured = true,
-            DepositPercentage = 25, SubscriptionPlan = "active"
+            DepositPercentage = 25, SubscriptionPlan = "active", SubscriptionStatus = "active", SubscriptionRenewsAt = DateTime.Now.AddMonths(6), StripeConnectAccountId = "acct_demo", StripeConnectOnboarded = true
         },
         new Business
         {
@@ -78,7 +78,7 @@ public static class MockStore
             Address = "17 Upper Street, Islington, London N1 0PQ",
             Latitude = 51.5340, Longitude = -0.1030, Phone = "+44 20 7946 0133",
             Rating = 4.6, TotalReviews = 97, IsApproved = true, IsFeatured = false,
-            DepositPercentage = 20, SubscriptionPlan = "active"
+            DepositPercentage = 20, SubscriptionPlan = "active", SubscriptionStatus = "active", SubscriptionRenewsAt = DateTime.Now.AddMonths(6), StripeConnectAccountId = "acct_demo", StripeConnectOnboarded = true
         },
         new Business
         {
@@ -88,7 +88,7 @@ public static class MockStore
             Address = "3 Morning Lane, Hackney, London E9 6ND",
             Latitude = 51.5460, Longitude = -0.0540, Phone = "+44 20 7946 0144",
             Rating = 4.9, TotalReviews = 76, IsApproved = true, IsFeatured = true,
-            DepositPercentage = 30, SubscriptionPlan = "active"
+            DepositPercentage = 30, SubscriptionPlan = "active", SubscriptionStatus = "active", SubscriptionRenewsAt = DateTime.Now.AddMonths(6), StripeConnectAccountId = "acct_demo", StripeConnectOnboarded = true
         },
         new Business
         {
@@ -98,7 +98,7 @@ public static class MockStore
             Address = "88 Chalk Farm Road, Camden, London NW1 8AR",
             Latitude = 51.5430, Longitude = -0.1490, Phone = "+44 20 7946 0155",
             Rating = 4.5, TotalReviews = 52, IsApproved = true, IsFeatured = false,
-            DepositPercentage = 20, SubscriptionPlan = "active"
+            DepositPercentage = 20, SubscriptionPlan = "active", SubscriptionStatus = "active", SubscriptionRenewsAt = DateTime.Now.AddMonths(6), StripeConnectAccountId = "acct_demo", StripeConnectOnboarded = true
         }
     };
 
@@ -344,10 +344,14 @@ public class MockBookingService : IBookingService
         booking.Service ??= MockStore.Services.FirstOrDefault(s => s.Id == booking.ServiceId);
         booking.Staff ??= booking.StaffId != null ? MockStore.Staff.FirstOrDefault(s => s.Id == booking.StaffId) : null;
         booking.Customer ??= MockStore.DemoUser;
-        booking.DepositPaid = true;
+        // Not paid yet - CreateBookingCheckoutAsync flips this once "payment" completes.
+        booking.DepositPaid = false;
         MockStore.Bookings.Insert(0, booking);
         return Task.FromResult<Booking?>(booking);
     }
+
+    public Task<Booking?> GetBookingByIdAsync(string bookingId)
+        => Task.FromResult(MockStore.Bookings.FirstOrDefault(b => b.Id == bookingId));
 
     public Task<List<Booking>> GetCustomerBookingsAsync(string customerId)
         => Task.FromResult(MockStore.Bookings.Where(b => b.CustomerId == customerId)
@@ -375,18 +379,61 @@ public class MockBookingService : IBookingService
     }
 }
 
+/// <summary>
+/// No real Stripe here — every "checkout" completes instantly and returns null
+/// (nothing for the app to open), so the UI treats null as "already paid".
+/// </summary>
 public class MockPaymentService : IPaymentService
 {
-    public Task<string?> CreatePaymentIntentAsync(decimal amount, string currency, string bookingId, string customerId)
-        => Task.FromResult<string?>("pi_mock_" + Guid.NewGuid().ToString("N")[..12] + "_secret");
-
-    public Task<Payment?> RecordPaymentAsync(Payment payment)
+    public Task<string?> CreateBookingCheckoutAsync(Booking pendingBooking)
     {
-        payment.Id = Guid.NewGuid().ToString();
-        payment.Status = PaymentStatus.Succeeded;
-        payment.CreatedAt = DateTime.Now;
-        MockStore.Payments.Add(payment);
-        return Task.FromResult<Payment?>(payment);
+        var booking = MockStore.Bookings.FirstOrDefault(b => b.Id == pendingBooking.Id);
+        if (booking != null)
+        {
+            booking.Status = BookingStatus.Confirmed;
+            booking.DepositPaid = true;
+        }
+
+        var fee = Math.Round(pendingBooking.TotalPrice * Constants.AppConstants.BookingPlatformFeePercent, 2);
+        MockStore.Payments.Add(new Payment
+        {
+            Id = Guid.NewGuid().ToString(),
+            BookingId = pendingBooking.Id,
+            CustomerId = pendingBooking.CustomerId,
+            BusinessId = pendingBooking.BusinessId,
+            Amount = pendingBooking.TotalPrice,
+            Type = PaymentType.Full,
+            Status = PaymentStatus.Succeeded,
+            PlatformFee = fee,
+            BusinessAmount = pendingBooking.TotalPrice - fee,
+            CreatedAt = DateTime.Now
+        });
+
+        return Task.FromResult<string?>(null);
+    }
+
+    public Task<string?> CreateSubscriptionCheckoutAsync(string businessId)
+    {
+        var business = MockStore.Businesses.FirstOrDefault(b => b.Id == businessId);
+        if (business != null)
+        {
+            business.SubscriptionStatus = "active";
+            business.SubscriptionRenewsAt = DateTime.Now.AddYears(1);
+            business.IsApproved = business.IsReadyToGoLive;
+        }
+        return Task.FromResult<string?>(null);
+    }
+
+    public Task<string?> CreateConnectOnboardingLinkAsync(string businessId)
+    {
+        var business = MockStore.Businesses.FirstOrDefault(b => b.Id == businessId);
+        if (business != null)
+        {
+            business.StripeConnectAccountId ??= "acct_mock_" + Guid.NewGuid().ToString("N")[..10];
+            business.StripeConnectOnboarded = true;
+            business.IsApproved = business.IsReadyToGoLive;
+        }
+        return Task.FromResult<string?>(null);
     }
 
     public Task<List<Payment>> GetPaymentsForBookingAsync(string bookingId)
