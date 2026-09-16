@@ -45,6 +45,7 @@ public static class MockStore
     public static readonly List<LoyaltyCard> LoyaltyCards = new();
     public static readonly List<Booking> Bookings = new();
     public static readonly List<Payment> Payments = new();
+    public static readonly List<BlockedTime> BlockedTimes = new();
 
     private static Category Cat(string slug) => Category.Defaults.First(c => c.Slug == slug);
 
@@ -320,16 +321,22 @@ public class MockBookingService : IBookingService
         var cursor = start;
         while (cursor.AddMinutes(durationMinutes) <= end)
         {
+            var slotEnd = cursor.AddMinutes(durationMinutes);
             var isPast = cursor <= now;
             var isBooked = MockStore.Bookings.Any(b =>
                 b.BusinessId == businessId && b.Status != BookingStatus.Cancelled &&
-                cursor < b.EndTime && cursor.AddMinutes(durationMinutes) > b.StartTime);
+                cursor < b.EndTime && slotEnd > b.StartTime);
+            var isBlocked = MockStore.BlockedTimes.Any(b =>
+                b.BusinessId == businessId &&
+                (staffId == null || b.StaffId == null || b.StaffId == staffId) &&
+                cursor < b.EndTime && slotEnd > b.StartTime);
+            var isUnavailable = isPast || isBooked || isBlocked;
             slots.Add(new TimeSlot
             {
                 DateTime = cursor,
-                IsAvailable = !isPast && !isBooked,
+                IsAvailable = !isUnavailable,
                 StaffId = staffId,
-                IsLastMinute = !isPast && !isBooked && (cursor - now).TotalHours <= 3
+                IsLastMinute = !isUnavailable && (cursor - now).TotalHours <= 3
             });
             cursor = cursor.AddMinutes(30);
         }
@@ -376,6 +383,24 @@ public class MockBookingService : IBookingService
         b.Status = status;
         if (reason != null) b.CancellationReason = reason;
         return Task.FromResult(true);
+    }
+
+    public Task<List<BlockedTime>> GetBlockedTimesAsync(string businessId)
+        => Task.FromResult(MockStore.BlockedTimes.Where(b => b.BusinessId == businessId)
+                                                  .OrderBy(b => b.StartTime).ToList());
+
+    public Task<BlockedTime?> CreateBlockedTimeAsync(BlockedTime block)
+    {
+        block.Id = Guid.NewGuid().ToString();
+        block.CreatedAt = DateTime.Now;
+        MockStore.BlockedTimes.Add(block);
+        return Task.FromResult<BlockedTime?>(block);
+    }
+
+    public Task<bool> DeleteBlockedTimeAsync(string blockId)
+    {
+        var removed = MockStore.BlockedTimes.RemoveAll(b => b.Id == blockId);
+        return Task.FromResult(removed > 0);
     }
 }
 

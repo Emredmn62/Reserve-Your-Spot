@@ -69,7 +69,7 @@ public partial class DashboardViewModel : BaseViewModel
 
     [RelayCommand]
     private async Task BlockTimeAsync()
-        => await Shell.Current.DisplayAlert("Block Time", "Block time UI coming soon.", "OK");
+        => await Shell.Current.GoToAsync(Constants.AppConstants.RouteBlockTime);
 
     [RelayCommand]
     private async Task NewPostAsync()

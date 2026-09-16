@@ -42,6 +42,12 @@ public class BookingService : IBookingService
                 : $"business_id=eq.{businessId}&start_time=gte.{dateStart}&start_time=lt.{dateEnd}&select=*";
             var existingBookings = await _supabase.GetListAsync<Booking>("bookings", filter);
 
+            // Business "Block Time" - fetched broad (whole business, whole day) and
+            // filtered per-slot below, same as bookings, since the overlap math is
+            // easier to do in C# than as a Postgres filter string.
+            var blockFilter = $"business_id=eq.{businessId}&start_time=lt.{dateEnd}&end_time=gt.{dateStart}&select=*";
+            var blockedTimes = await _supabase.GetListAsync<BlockedTime>("blocked_times", blockFilter);
+
             var slots = new List<TimeSlot>();
             var current = date.Date + openTime;
             var end = date.Date + closeTime;
@@ -54,15 +60,20 @@ public class BookingService : IBookingService
                     b.Status != BookingStatus.Cancelled &&
                     current < b.EndTime && slotEnd > b.StartTime);
 
+                var isBlocked = blockedTimes.Any(b =>
+                    (staffId == null || b.StaffId == null || b.StaffId == staffId) &&
+                    current < b.EndTime && slotEnd > b.StartTime);
+
                 var isPast = current <= now;
-                var isLastMinute = !isPast && (current - now).TotalHours <= 2;
+                var isUnavailable = isBooked || isBlocked || isPast;
+                var isLastMinute = !isUnavailable && (current - now).TotalHours <= 2;
 
                 slots.Add(new TimeSlot
                 {
                     DateTime = current,
-                    IsAvailable = !isBooked && !isPast,
+                    IsAvailable = !isUnavailable,
                     StaffId = staffId,
-                    IsLastMinute = isLastMinute && !isBooked && !isPast
+                    IsLastMinute = isLastMinute
                 });
 
                 current = current.AddMinutes(30); // 30-min intervals
@@ -147,6 +158,32 @@ public class BookingService : IBookingService
         try
         {
             await _supabase.UpdateAsync("bookings", $"id=eq.{bookingId}", new { status = "completed" });
+            return true;
+        }
+        catch { return false; }
+    }
+
+    public async Task<List<BlockedTime>> GetBlockedTimesAsync(string businessId)
+    {
+        try
+        {
+            return await _supabase.GetListAsync<BlockedTime>(
+                "blocked_times", $"business_id=eq.{businessId}&select=*&order=start_time.asc");
+        }
+        catch { return new(); }
+    }
+
+    public async Task<BlockedTime?> CreateBlockedTimeAsync(BlockedTime block)
+    {
+        try { return await _supabase.InsertAsync<BlockedTime>("blocked_times", block); }
+        catch { return null; }
+    }
+
+    public async Task<bool> DeleteBlockedTimeAsync(string blockId)
+    {
+        try
+        {
+            await _supabase.DeleteAsync("blocked_times", $"id=eq.{blockId}");
             return true;
         }
         catch { return false; }

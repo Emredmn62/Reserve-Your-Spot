@@ -73,6 +73,7 @@ namespace Reserve_Your_Spot
             services.AddTransient<ManageStaffViewModel>();
             services.AddTransient<BusinessProfileEditViewModel>();
             services.AddTransient<CreatePostViewModel>();
+            services.AddTransient<BlockTimeViewModel>();
         }
 
         private static void RegisterPages(IServiceCollection services)
@@ -97,6 +98,7 @@ namespace Reserve_Your_Spot
             services.AddTransient<DashboardPage>();
             services.AddTransient<CalendarPage>();
             services.AddTransient<CreatePostPage>();
+            services.AddTransient<BlockTimePage>();
         }
     }
 }

@@ -25,6 +25,7 @@ namespace Reserve_Your_Spot
             Routing.RegisterRoute("payment", typeof(PaymentPage));
             Routing.RegisterRoute("bookingconfirmation", typeof(BookingConfirmationPage));
             Routing.RegisterRoute("createpost", typeof(CreatePostPage));
+            Routing.RegisterRoute("blocktime", typeof(BlockTimePage));
         }
     }
 }

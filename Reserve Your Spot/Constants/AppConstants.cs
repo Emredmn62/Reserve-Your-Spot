@@ -41,4 +41,5 @@ public static class AppConstants
     public const string RoutePayment = "payment";
     public const string RouteBookingConfirmation = "bookingconfirmation";
     public const string RouteCreatePost = "createpost";
+    public const string RouteBlockTime = "blocktime";
 }

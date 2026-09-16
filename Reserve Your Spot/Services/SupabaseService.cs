@@ -300,6 +300,25 @@ create index on bookings(customer_id, start_time);
 create index on bookings(business_id, start_time);
 create index on bookings(staff_id, start_time);
 
+-- blocked_times: business "Block Time" - hours a business (or one staff
+-- member, if staff_id is set) has marked itself unavailable. Customers just
+-- see these slots as unavailable, same as a real booking.
+create table blocked_times (
+  id uuid primary key default uuid_generate_v4(),
+  business_id uuid references businesses(id) on delete cascade,
+  staff_id uuid references staff(id), -- null = whole business
+  start_time timestamptz not null,
+  end_time timestamptz not null,
+  note text,
+  created_at timestamptz default now()
+);
+create index on blocked_times(business_id, start_time);
+alter table blocked_times enable row level security;
+create policy "Owner manage blocked times" on blocked_times for all using (
+  exists(select 1 from businesses where id = business_id and owner_id = auth.uid())
+);
+create policy "Public read blocked times" on blocked_times for select using (true);
+
 -- payments
 create table payments (
   id uuid primary key default uuid_generate_v4(),

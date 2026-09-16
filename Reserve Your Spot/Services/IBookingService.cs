@@ -13,4 +13,11 @@ public interface IBookingService
     Task<bool> ConfirmBookingAsync(string bookingId);
     Task<bool> MarkNoShowAsync(string bookingId);
     Task<bool> CompleteBookingAsync(string bookingId);
+
+    // Business "Block Time" - hours a business (or one staff member) marks
+    // itself unavailable. Blocked slots show to customers exactly like a
+    // booked slot: greyed out, no explanation given.
+    Task<List<BlockedTime>> GetBlockedTimesAsync(string businessId);
+    Task<BlockedTime?> CreateBlockedTimeAsync(BlockedTime block);
+    Task<bool> DeleteBlockedTimeAsync(string blockId);
 }
