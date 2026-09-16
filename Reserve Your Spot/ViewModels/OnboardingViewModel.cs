@@ -30,20 +30,6 @@ public partial class OnboardingViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void Next()
-    {
-        if (CurrentIndex < Slides.Count - 1)
-        {
-            CurrentIndex++;
-            CurrentSlide = Slides[CurrentIndex];
-        }
-        else
-        {
-            GetStarted();
-        }
-    }
-
-    [RelayCommand]
     private void Skip() => NavigateToLogin();
 
     // "Get Started" drops you straight into the app as a guest — browsing is

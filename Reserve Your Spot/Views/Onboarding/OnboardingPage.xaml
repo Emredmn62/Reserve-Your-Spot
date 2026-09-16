@@ -55,7 +55,8 @@
                            IndicatorSize="10"
                            HorizontalOptions="Center" />
 
-            <!-- Get Started button -->
+            <!-- Get Started button: always jumps straight into the app as a guest,
+                 from any slide. Swiping/dots are the only way to page through slides. -->
             <Button Text="Get Started"
                     BackgroundColor="{StaticResource ColorGold}"
                     TextColor="{StaticResource ColorBlack}"
@@ -63,7 +64,7 @@
                     HeightRequest="52"
                     FontAttributes="Bold"
                     FontSize="16"
-                    Command="{Binding NextCommand}" />
+                    Command="{Binding GetStartedCommand}" />
 
             <!-- Sign In link -->
             <Label HorizontalOptions="Center">
