@@ -27,23 +27,42 @@ public static class MockStore
         CreatedAt = DateTime.Now
     };
 
+    // Your own personal test login - sign in with this email (any password) and
+    // you're "Emre", already owning a live business, ready to poke at the
+    // Dashboard/Calendar/Block Time/New Post without redoing signup every time.
+    public const string EmreUserId = "emre-user";
+    public const string EmreEmail = "emre@business.com";
+    public const string EmreBusinessId = "emre-biz";
+
     // ---------------------------------------------------------------------
     // DEMO SEED DATA — flip this to false to go back to a clean, empty app
     // ready for real launch. True is for previewing what a "finished" app
     // looks like on the customer side: 5 example businesses, already
-    // approved, each with a couple of feed posts.
+    // approved, each with a couple of feed posts. Emre's test business (below)
+    // exists either way - it's not "launch content", it's just for you to test with.
     // ---------------------------------------------------------------------
     private const bool IncludeDemoSeedData = true;
 
-    public static readonly List<Business> Businesses = IncludeDemoSeedData ? BuildDemoBusinesses() : new();
-    public static readonly List<Service> Services = IncludeDemoSeedData ? BuildDemoServices() : new();
-    public static readonly List<Staff> Staff = IncludeDemoSeedData ? BuildDemoStaff() : new();
-    public static readonly List<Post> Posts = IncludeDemoSeedData ? BuildDemoPosts() : new();
+    public static readonly List<Business> Businesses =
+        (IncludeDemoSeedData ? BuildDemoBusinesses() : new List<Business>())
+        .Append(BuildEmreBusiness()).ToList();
+
+    public static readonly List<Service> Services =
+        (IncludeDemoSeedData ? BuildDemoServices() : new List<Service>())
+        .Concat(BuildEmreServices()).ToList();
+
+    public static readonly List<Staff> Staff =
+        (IncludeDemoSeedData ? BuildDemoStaff() : new List<Staff>())
+        .Concat(BuildEmreStaff()).ToList();
+
+    public static readonly List<Post> Posts =
+        (IncludeDemoSeedData ? BuildDemoPosts() : new List<Post>())
+        .Concat(BuildEmrePosts()).ToList();
 
     public static readonly List<Review> Reviews = new();
     public static readonly HashSet<string> Favourites = new();
     public static readonly List<LoyaltyCard> LoyaltyCards = new();
-    public static readonly List<Booking> Bookings = new();
+    public static readonly List<Booking> Bookings = BuildEmreBookings();
     public static readonly List<Payment> Payments = new();
     public static readonly List<BlockedTime> BlockedTimes = new();
 
@@ -163,6 +182,64 @@ public static class MockStore
         }).ToList();
     }
 
+    // ---- Emre's personal test business - always present, regardless of IncludeDemoSeedData ----
+
+    private static Business BuildEmreBusiness() => new()
+    {
+        Id = EmreBusinessId, OwnerId = EmreUserId, Name = "Emre's Barbershop", Slug = "emres-barbershop",
+        Description = "Personal test business - poke at anything here, it won't affect the demo businesses.",
+        CategoryId = "1", Category = Cat("barbers"),
+        Address = "1 Test Street, London E1 6AN",
+        Latitude = 51.5155, Longitude = -0.0922, Phone = "+44 20 7946 0199",
+        Rating = 5.0, TotalReviews = 1, IsApproved = true, IsFeatured = false,
+        DepositPercentage = 20, SubscriptionPlan = "active",
+        SubscriptionStatus = "active", SubscriptionRenewsAt = DateTime.Now.AddMonths(11),
+        StripeConnectAccountId = "acct_emre_test", StripeConnectOnboarded = true
+    };
+
+    private static List<Service> BuildEmreServices() => new()
+    {
+        new() { Id = "emre-svc-1", BusinessId = EmreBusinessId, Name = "Test Haircut",
+                Description = "A quick one to test the booking flow.", DurationMinutes = 30, Price = 15m, DepositAmount = 3m },
+        new() { Id = "emre-svc-2", BusinessId = EmreBusinessId, Name = "Test Full Service",
+                Description = "A pricier one to test payment amounts.", DurationMinutes = 60, Price = 50m, DepositAmount = 10m },
+    };
+
+    private static List<Staff> BuildEmreStaff() => new()
+    {
+        new() { Id = "emre-stf-1", BusinessId = EmreBusinessId, Name = "Emre", Role = "Owner", Bio = "That's you." },
+    };
+
+    private static List<Post> BuildEmrePosts() => new()
+    {
+        new()
+        {
+            Id = "emre-post-1", BusinessId = EmreBusinessId,
+            Business = Businesses.First(b => b.Id == EmreBusinessId),
+            Caption = "Testing, testing — this is your own post.",
+            ImageUrl = "https://loremflickr.com/900/700/barbershop?lock=99",
+            CreatedAt = DateTime.Now.AddHours(-1)
+        }
+    };
+
+    private static List<Booking> BuildEmreBookings()
+    {
+        var business = Businesses.First(b => b.Id == EmreBusinessId);
+        var service = Services.First(s => s.Id == "emre-svc-1");
+        var start = DateTime.Today.AddHours(14);
+        return new List<Booking>
+        {
+            new()
+            {
+                Id = "emre-bkg-1", CustomerId = "test-customer-1", BusinessId = EmreBusinessId,
+                ServiceId = service.Id, StartTime = start, EndTime = start.AddMinutes(service.DurationMinutes),
+                TotalPrice = service.Price, DepositAmount = service.Price, RemainingBalance = 0,
+                Status = BookingStatus.Confirmed, DepositPaid = true, CreatedAt = DateTime.Now.AddDays(-1),
+                Business = business, Service = service, Customer = new User { Id = "test-customer-1", FullName = "Test Customer" }
+            }
+        };
+    }
+
     // Invite codes you hand out. One code = one business.
     // Replace/extend with your real codes (in production these live in the DB).
     public static readonly List<ReferralCode> ReferralCodes = new()
@@ -177,15 +254,21 @@ public class MockAuthService : IAuthService
 {
     private bool _isBusinessOwner;
     private bool _isLoggedIn;
+    private string _currentUserId = MockStore.DemoUserId;
+    private string _currentUserName = MockStore.DemoUser.FullName;
+    private string _currentUserEmail = MockStore.DemoUser.Email;
 
     // Browsing (Home feed, Search, business profiles) never requires an account.
     // You're only "logged in" after Sign In / Create Account actually runs.
     public bool IsLoggedIn => _isLoggedIn;
-    public string? CurrentUserId => _isLoggedIn ? MockStore.DemoUserId : null;
+    public string? CurrentUserId => _isLoggedIn ? _currentUserId : null;
     public bool IsBusinessOwner => _isLoggedIn && _isBusinessOwner;
 
     public Task<bool> SignUpAsync(string email, string password, string fullName, string phone, bool isBusinessOwner)
     {
+        _currentUserId = MockStore.DemoUserId;
+        _currentUserName = fullName;
+        _currentUserEmail = email;
         _isBusinessOwner = isBusinessOwner;
         _isLoggedIn = true;
         return Task.FromResult(true);
@@ -193,8 +276,26 @@ public class MockAuthService : IAuthService
 
     public Task<bool> SignInAsync(string email, string password)
     {
-        // Any credentials work in the demo. "biz@" prefix signs in as a business owner.
-        _isBusinessOwner = email.TrimStart().StartsWith("biz", StringComparison.OrdinalIgnoreCase);
+        var trimmed = email.Trim();
+
+        // Your own always-ready test account - already owns a live business.
+        if (trimmed.Equals(MockStore.EmreEmail, StringComparison.OrdinalIgnoreCase))
+        {
+            _currentUserId = MockStore.EmreUserId;
+            _currentUserName = "Emre";
+            _currentUserEmail = trimmed;
+            _isBusinessOwner = true;
+        }
+        else
+        {
+            // Any other credentials work in the demo. "biz@" prefix signs in as a
+            // (brand new, no business yet) business owner; anything else is a customer.
+            _currentUserId = MockStore.DemoUserId;
+            _currentUserName = MockStore.DemoUser.FullName;
+            _currentUserEmail = trimmed;
+            _isBusinessOwner = trimmed.StartsWith("biz", StringComparison.OrdinalIgnoreCase);
+        }
+
         _isLoggedIn = true;
         return Task.FromResult(true);
     }
@@ -209,9 +310,14 @@ public class MockAuthService : IAuthService
     public Task<User?> GetCurrentUserAsync()
     {
         if (!_isLoggedIn) return Task.FromResult<User?>(null);
-        var user = MockStore.DemoUser;
-        user.IsBusinessOwner = _isBusinessOwner;
-        return Task.FromResult<User?>(user);
+        return Task.FromResult<User?>(new User
+        {
+            Id = _currentUserId,
+            FullName = _currentUserName,
+            Email = _currentUserEmail,
+            PhoneNumber = MockStore.DemoUser.PhoneNumber,
+            IsBusinessOwner = _isBusinessOwner
+        });
     }
 }
 
